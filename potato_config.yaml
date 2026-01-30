@@ -1,0 +1,22 @@
+OPENAI_API_KEY: sk-YOURAPIKEY
+history_file: chat_history_potato.json
+model: "gpt-3.5-turbo"  # Using a lighter model for faster responses
+
+# Potato-optimized settings
+local_llm_path: "models/tiny-llm"
+local_asr_path: "tiny.en"  # Smallest Whisper model
+backend_preference: "cpu_legacy"  # Force CPU operation
+
+presets:
+  default:
+    system_prompt: |
+      You are Riko, a helpful and cheerful AI companion.
+      You speak in a friendly, light-hearted manner.
+      Keep your responses concise and avoid overly complex language.
+      Be supportive and encouraging to your senpai.
+
+sovits_ping_config:
+  text_lang: en
+  prompt_lang: en
+  ref_audio_path: ./character_files/main_sample.wav
+  prompt_text: This is a sample voice for you to just get started with because it sounds kind of cute.
