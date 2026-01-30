@@ -1,0 +1,13 @@
+# Minimal requirements for potato systems
+numpy<2.0
+PyYAML
+requests
+openai
+torch==2.0.1
+torchaudio==2.0.2
+transformers>=4.43
+librosa==0.10.2
+sounddevice
+pydub
+tqdm
+psutil
