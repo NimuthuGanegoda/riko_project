@@ -1,13 +1,11 @@
 import os
 import sounddevice as sd
 import soundfile as sf
-from faster_whisper import WhisperModel
 
-def record_and_transcribe(model, output_file="recording.wav", samplerate=44100):
+def record_audio(output_file="recording.wav", samplerate=44100):
     """
-    Simple push-to-talk recorder: record -> save -> transcribe -> return text
+    Simple push-to-talk recorder: record -> save -> return path
     """
-    
     # Remove existing file
     if os.path.exists(output_file):
         os.remove(output_file)
@@ -26,20 +24,4 @@ def record_and_transcribe(model, output_file="recording.wav", samplerate=44100):
     
     # Write the file
     sf.write(output_file, recording, samplerate)
-    
-    print("🎯 Transcribing...")
-    
-    # Transcribe
-    segments, _ = model.transcribe(output_file)
-    transcription = " ".join([segment.text for segment in segments])
-    
-    print(f"Transcription: {transcription}")
-    return transcription.strip()
-
-
-# Example usage
-if __name__ == "__main__":
-    model = WhisperModel("base.en", device="cpu", compute_type="float32")
-    result = record_and_transcribe(model)
-    print(f"Got: '{result}'")
-    
+    return output_file

@@ -1,6 +1,12 @@
 OPENAI_API_KEY: sk-YOURAPIKEY
 history_file: chat_history.json
 model: "gpt-4.1-mini"
+
+# Legacy / Local Hardware Support
+local_llm_path: "models/riko-llm"
+local_asr_path: "base.en"
+backend_preference: "auto" # Options: auto, cuda, openvino, cpu_legacy
+
 presets:
   default:
     system_prompt: |
@@ -13,4 +19,3 @@ sovits_ping_config:
   prompt_lang : en
   ref_audio_path : D:\PyProjects\waifu_project\riko_project\character_files\main_sample.wav
   prompt_text : This is a sample voice for you to just get started with because it sounds kind of cute but just make sure this doesn't have long silences.
-  
