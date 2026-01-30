@@ -1,0 +1,9 @@
+openvino>=2024.0.0
+optimum-intel
+llama-cpp-python
+py-cpuinfo
+pywhispercpp
+soundfile
+sounddevice
+numpy
+librosa
