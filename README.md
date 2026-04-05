@@ -1,12 +1,12 @@
 # Project Riko
 
-Project Riko is an elite anime-focused AI companion project by Just Rayen. She doesn't just listen; she remembers everything about you and stays aware of your world. It combines OpenAI’s GPT, GPT-SoVITS voice synthesis, and Faster-Whisper ASR into a fully autonomous conversational pipeline.
+Project Riko is an elite anime-focused AI companion project by Just Rayen. She doesn't just listen; she remembers everything about you and stays aware of your world. It combines multi-brain LLM support (OpenAI, Gemini, Ollama), GPT-SoVITS voice synthesis, and Faster-Whisper ASR into a fully autonomous conversational pipeline.
 
 **tested with python 3.10+ Windows >10 and Linux Ubuntu**
 
 ## ✨ Elite Features
 
-- 💬 **LLM-based dialogue** using OpenAI API (configurable system prompts)
+- 💬 **Multi-Brain Dialogue**: Supports **OpenAI GPT**, **Google Gemini**, and **Ollama (100% Local)**. Choose the brain that fits your needs!
 - 🧠 **Long-Term Memory (RAG)**: Uses a persistent vector database (`ChromaDB`) to remember past conversations and context forever.
 - 👂 **Cortana-style Listening**: Continuous Voice Activity Detection (VAD). Just say her name (**"Riko"**) to wake her up!
 - 👁️ **Screen Awareness**: Automatically monitors your clipboard to stay aware of what you are working on.
@@ -20,9 +20,17 @@ Project Riko is an elite anime-focused AI companion project by Just Rayen. She d
 All prompts and parameters are stored in `character_config.yaml`.
 
 ```yaml
+# API Keys
 OPENAI_API_KEY: sk-YOURAPIKEY
+GEMINI_API_KEY: YOUR_GEMINI_API_KEY
+
+# LLM Provider Configuration
+# Options: openai, gemini, ollama, auto
+llm_provider: "gemini" 
+model: "gemini-1.5-flash"  # or "gpt-4o", "llama3", etc.
+
 history_file: chat_history.json
-model: "gpt-4.1-mini"
+
 presets:
   default:
     system_prompt: |
@@ -45,7 +53,7 @@ sovits_ping_config:
 ```bash
 pip install uv 
 uv pip install -r requirements.txt
-pip install chromadb pyperclip sounddevice soundfile numpy
+pip install chromadb pyperclip sounddevice soundfile numpy google-generativeai ollama
 ```
 
 **System Requirements:**
@@ -71,7 +79,7 @@ python server/main_chat.py
 2. **Wake Word**: Speak her name (**"Riko"**) to trigger her attention.
 3. **Transcription**: Transcribes your voice with Faster-Whisper.
 4. **Context Retrieval**: Automatically pulls relevant past memories from her vector database and reads your current clipboard.
-5. **Brain**: Passes all context to GPT for a highly personalized response.
+5. **Brain Selection**: Processes your command using OpenAI, Gemini, or a local Ollama model.
 6. **Voice Synthesis**: Synthesizes her voice using GPT-SoVITS.
 7. **Playback**: Plays her response back to you.
 
@@ -82,6 +90,7 @@ python server/main_chat.py
 * [x] Live microphone input support (Continuous Listening)
 * [ ] Emotion or tone control in speech synthesis
 * [ ] VRM model frontend
+* [x] Multi-LLM support (Gemini & Ollama)
 
 
 ## 🧑‍🎤 Credits
@@ -89,7 +98,7 @@ python server/main_chat.py
 * Voice synthesis powered by [GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)
 * ASR via [Faster-Whisper](https://github.com/SYSTRAN/faster-whisper)
 * Vector Database by [ChromaDB](https://github.com/chroma-core/chroma)
-* Language model via [OpenAI GPT](https://platform.openai.com)
+* Brains powered by [OpenAI](https://platform.openai.com), [Google Gemini](https://aistudio.google.com), and [Ollama](https://ollama.com)
 
 
 ## 📜 License
