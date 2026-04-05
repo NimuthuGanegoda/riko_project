@@ -11,6 +11,7 @@ from pathlib import Path
 
 # Import only essential modules for text processing
 from process.llm_funcs.llm_factory import LLMFactory
+from server.memory_manager import MemoryManager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -93,10 +94,23 @@ def main():
                 print("  Any other text - Chat with Riko!")
                 continue
             
-            # Add user message to history
-            messages.append({"role": "user", "content": user_input})
+            # Retrieve long-term memory context
+            past_context = memory_db.get_context(user_input, n_results=3)
+            if past_context:
+                context_msg = f"Relevant past memories:\n{past_context}\n\nUser's current message: {user_input}"
+                messages.append({"role": "user", "content": context_msg})
+            else:
+                messages.append({"role": "user", "content": user_input})
             
             print("🤔 Riko is thinking...")
+            
+            # Screen Awareness: Read Clipboard
+            try:
+                clip_text = pyperclip.paste()
+                if clip_text and clip_text.strip():
+                    messages.append({"role": "system", "content": f"[System: The user's current clipboard contains: '{clip_text[:500]}']"})
+            except Exception:
+                pass
             
             # Get response from LLM
             try:

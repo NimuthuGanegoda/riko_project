@@ -1,4 +1,4 @@
-from process.asr_func.asr_push_to_talk import record_audio
+from process.asr_func.asr_continuous import listen_continuously
 from process.tts_func.sovits_ping import sovits_gen, play_audio
 from pathlib import Path
 import os
@@ -6,11 +6,13 @@ import json
 import yaml
 import uuid
 import logging
+import pyperclip
 
 from hardware import HardwareDetector
 from model_manager import ModelManager
 from process.asr_func.asr_factory import ASRFactory
 from process.llm_funcs.llm_factory import LLMFactory
+from memory_manager import MemoryManager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -74,6 +76,7 @@ except Exception as e:
 # History Management
 HISTORY_FILE = config['history_file']
 SYSTEM_PROMPT = [{"role": "system", "content": config['presets']['default']['system_prompt']}]
+memory_db = MemoryManager(db_path="chroma_db")
 
 def load_history():
     if os.path.exists(HISTORY_FILE):
@@ -109,9 +112,26 @@ while True:
 
     # LLM Generation
     messages = load_history()
-    messages.append({"role": "user", "content": user_spoken_text})
+    
+    # Retrieve long-term memory context
+    past_context = memory_db.get_context(user_spoken_text, n_results=3)
+    if past_context:
+        context_msg = f"Relevant past memories:\n{past_context}\n\nUser's current message: {user_spoken_text}"
+        messages.append({"role": "user", "content": context_msg})
+    else:
+        messages.append({"role": "user", "content": user_spoken_text})
 
     print("Riko is thinking...")
+    
+    # Screen Awareness: Read Clipboard
+    try:
+        clip_text = pyperclip.paste()
+        if clip_text and clip_text.strip():
+            # Inject clipboard silently
+            messages.append({"role": "system", "content": f"[System: The user's current clipboard contains: '{clip_text[:500]}']"})
+    except Exception:
+        pass
+
     try:
         response = llm.generate(messages)
         print(f"Riko: {response}")
@@ -121,6 +141,10 @@ while True:
 
     messages.append({"role": "assistant", "content": response})
     save_history(messages)
+    
+    # Save to long-term memory
+    memory_db.add_memory(user_spoken_text, "user")
+    memory_db.add_memory(response, "assistant")
 
     # TTS
     uid = uuid.uuid4().hex
