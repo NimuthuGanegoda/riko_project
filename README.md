@@ -79,7 +79,12 @@ presets:
     ```bash
     python server/main_chat.py
     ```
-3.  **Say "Riko"** followed by your message. She will listen and respond!
+3.  **Run the Web Interface (Optional):**
+    ```bash
+    ./run_web.sh
+    ```
+    Access the UI at `http://localhost:3000`.
+4.  **Say "Riko"** followed by your message. She will listen and respond!
 
 ---
 
