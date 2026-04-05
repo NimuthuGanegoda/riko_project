@@ -65,7 +65,7 @@ else:
 
 logger.info(f"Initializing LLM: {llm_backend} with {real_llm_path}")
 try:
-    llm = LLMFactory.create_llm(llm_backend, real_llm_path, api_key=config.get('OPENAI_API_KEY'))
+    llm = LLMFactory.create_llm(llm_backend, real_llm_path, api_key=config.get('OPENAI_API_KEY'), openvino_device=hw_config.get('openvino_device', 'CPU'))
 except Exception as e:
     logger.error(f"Failed to initialize LLM: {e}")
     exit(1)

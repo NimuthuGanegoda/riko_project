@@ -56,16 +56,26 @@ class HardwareDetector:
         """Returns the best backend found based on priority."""
         if "cuda" in self.device_priority:
             return "cuda"
-        elif "openvino_gpu" in self.device_priority:
-            return "openvino" # Can clarify specific device later if needed
+        elif any(ov in self.device_priority for ov in ["openvino_npu", "openvino_gpu", "openvino_cpu"]):
+            return "openvino"
         elif "cpu_legacy" in self.device_priority:
             return "cpu_legacy"
         else:
             return "cpu"
 
+    def get_openvino_device(self):
+        if "openvino_npu" in self.device_priority:
+            return "NPU"
+        elif "openvino_gpu" in self.device_priority:
+            return "GPU"
+        elif "openvino_cpu" in self.device_priority:
+            return "CPU"
+        return "CPU"
+
     def get_hardware_config(self):
         return {
             "backend": self.get_best_backend(),
+            "openvino_device": self.get_openvino_device(),
             "avx2": self.avx2_supported,
             "priority_list": self.device_priority,
             "openvino_available": OPENVINO_AVAILABLE

@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 class LLMFactory:
     @staticmethod
-    def create_llm(backend, model_path, api_key=None, system_prompt=None) -> LLMProvider:
+    def create_llm(backend, model_path, api_key=None, system_prompt=None, openvino_device="CPU") -> LLMProvider:
         logger.info(f"Creating LLM with backend: {backend}")
 
         if backend == "openai":
@@ -18,7 +18,7 @@ class LLMFactory:
 
         elif backend == "openvino":
             from .llm_local_openvino import OpenVINOLLM
-            return OpenVINOLLM(model_path)
+            return OpenVINOLLM(model_path, device=openvino_device)
 
         else:
             # Default fallback or error

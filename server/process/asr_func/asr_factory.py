@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 class ASRFactory:
     @staticmethod
-    def create_asr(backend, model_path="base.en") -> ASRProvider:
+    def create_asr(backend, model_path="base.en", openvino_device="CPU") -> ASRProvider:
         logger.info(f"Creating ASR with backend: {backend}")
 
         if backend == "cuda":
@@ -14,7 +14,7 @@ class ASRFactory:
 
         elif backend == "openvino":
             from .asr_openvino import OpenVINOASR
-            return OpenVINOASR(model_path)
+            return OpenVINOASR(model_path, device=openvino_device)
 
         elif backend == "cpu_legacy" or backend == "whisper_cpp":
             from .asr_whisper_cpp import WhisperCppASR
