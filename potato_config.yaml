@@ -1,6 +1,11 @@
 OPENAI_API_KEY: sk-YOURAPIKEY
+GEMINI_API_KEY: YOUR_GEMINI_API_KEY
 history_file: chat_history_potato.json
-model: "gpt-3.5-turbo"  # Using a lighter model for faster responses
+model: "gpt-3.5-turbo"  # Model name (e.g., gemini-1.5-flash or llama3)
+
+# LLM Provider Configuration
+# Options: openai, gemini, ollama
+llm_provider: "openai" 
 
 # Potato-optimized settings
 local_llm_path: "models/tiny-llm"

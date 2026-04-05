@@ -27,21 +27,19 @@ with open(config_path, 'r') as f:
 config['backend_preference'] = 'cpu_legacy'
 logger.info("Using CPU-only backend for potato system compatibility")
 
-# Initialize LLM with OpenAI for reduced local processing
-llm_backend = "openai"
+# Initialize LLM with configured provider
+llm_backend = config.get('llm_provider', 'openai') # Default to openai but can be gemini or ollama
 llm_model = config.get('model', 'gpt-3.5-turbo')
-api_key = config.get('OPENAI_API_KEY')
+api_key = config.get('OPENAI_API_KEY') if llm_backend != 'gemini' else config.get('GEMINI_API_KEY')
 
-if not api_key or api_key == "sk-YOURAPIKEY":
-    print("⚠️  WARNING: No valid API key found!")
-    print("Please set your OpenAI API key in the config file.")
-    print("Edit potato_config.yaml and replace 'sk-YOURAPIKEY' with your actual API key.")
-    api_key = input("Enter your OpenAI API key: ").strip()
+if (llm_backend in ["openai", "gemini"]) and (not api_key or api_key in ["sk-YOURAPIKEY", "YOUR_GEMINI_API_KEY"]):
+    print(f"⚠️  WARNING: No valid API key found for {llm_backend}!")
+    print(f"Please set your {llm_backend.upper()} API key in the config file.")
+    api_key = input(f"Enter your {llm_backend.upper()} API key: ").strip()
     if api_key:
-        # Update config temporarily
-        config['OPENai_API_KEY'] = api_key
+        config[f'{llm_backend.upper()}_API_KEY'] = api_key
 
-print(f"Initializing LLM with model: {llm_model}")
+print(f"Initializing LLM: {llm_backend} with model: {llm_model}")
 llm = LLMFactory.create_llm(llm_backend, llm_model, api_key=api_key)
 
 # History Management

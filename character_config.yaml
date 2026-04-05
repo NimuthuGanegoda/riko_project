@@ -1,6 +1,11 @@
 OPENAI_API_KEY: sk-YOURAPIKEY
+GEMINI_API_KEY: YOUR_GEMINI_API_KEY
 history_file: chat_history.json
-model: "gpt-4.1-mini"
+model: "gpt-4.1-mini" # Model name (for OpenAI, Gemini, or Ollama)
+
+# LLM Provider Configuration
+# Options: openai, gemini, ollama, auto (auto uses hardware logic)
+llm_provider: "auto" 
 
 # Legacy / Local Hardware Support
 local_llm_path: "models/riko-llm"

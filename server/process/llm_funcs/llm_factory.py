@@ -12,6 +12,14 @@ class LLMFactory:
             from .llm_openai import OpenAILLM
             return OpenAILLM(api_key, model_path) # System prompt usually handled in history or separate
 
+        elif backend == "gemini":
+            from .llm_gemini import GeminiLLM
+            return GeminiLLM(api_key, model_path)
+
+        elif backend == "ollama":
+            from .llm_ollama import OllamaLLM
+            return OllamaLLM(model_path)
+
         elif backend == "cpu_legacy" or backend == "llama_cpp":
             from .llm_local_gguf import LlamaCppLLM
             return LlamaCppLLM(model_path)

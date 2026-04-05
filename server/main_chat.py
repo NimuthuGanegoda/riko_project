@@ -47,27 +47,32 @@ mm = ModelManager()
 llm_path = config.get('local_llm_path', 'models/riko-llm')
 
 # Determine LLM Backend
-# Logic:
-# - If backend is OpenVINO -> Use OpenVINO LLM
-# - If backend is CPU Legacy / Generic CPU (no CUDA) -> Use GGUF
-# - If backend is CUDA -> Default to OpenAI (or CUDA Local if implemented, but strictly OpenAI is default for Riko)
-llm_backend = backend
+llm_backend = config.get('llm_provider', 'auto')
 
-if backend == 'cuda':
-    llm_backend = "openai"
-elif backend not in ['openvino']:
-    # Fallback for CPU / Legacy -> GGUF
-    llm_backend = "cpu_legacy"
+if llm_backend == 'auto':
+    # Logic based on hardware:
+    if backend == 'cuda':
+        llm_backend = "openai"
+    elif backend == 'openvino':
+        llm_backend = "openvino"
+    else:
+        # Fallback for CPU / Legacy -> GGUF
+        llm_backend = "cpu_legacy"
 
 # Resolve model path (find quantized versions if local)
 if llm_backend in ["openvino", "cpu_legacy"]:
     real_llm_path = mm.find_model(llm_path, llm_backend)
 else:
-    real_llm_path = config['model'] # OpenAI model name
+    real_llm_path = config['model'] # Remote model name (OpenAI, Gemini, or Ollama)
+
+# Get API Keys
+api_key = config.get('OPENAI_API_KEY')
+if llm_backend == "gemini":
+    api_key = config.get('GEMINI_API_KEY')
 
 logger.info(f"Initializing LLM: {llm_backend} with {real_llm_path}")
 try:
-    llm = LLMFactory.create_llm(llm_backend, real_llm_path, api_key=config.get('OPENAI_API_KEY'), openvino_device=hw_config.get('openvino_device', 'CPU'))
+    llm = LLMFactory.create_llm(llm_backend, real_llm_path, api_key=api_key, openvino_device=hw_config.get('openvino_device', 'CPU'))
 except Exception as e:
     logger.error(f"Failed to initialize LLM: {e}")
     exit(1)
