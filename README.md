@@ -1,20 +1,23 @@
 # Project Riko
 
-Project Riko is a anime focused LLM project by Just Rayen. She listens, and remembers your conversations. It combines OpenAI’s GPT, GPT-SoVITS voice synthesis, and Faster-Whisper ASR into a fully configurable conversational pipeline.
+Project Riko is an elite anime-focused AI companion project by Just Rayen. She doesn't just listen; she remembers everything about you and stays aware of your world. It combines OpenAI’s GPT, GPT-SoVITS voice synthesis, and Faster-Whisper ASR into a fully autonomous conversational pipeline.
 
-**tested with python 3.10 Windows >10 and Linux Ubuntu**
-## ✨ Features
+**tested with python 3.10+ Windows >10 and Linux Ubuntu**
+
+## ✨ Elite Features
 
 - 💬 **LLM-based dialogue** using OpenAI API (configurable system prompts)
-- 🧠 **Conversation memory** to keep context during interactions
-- 🔊 **Voice generation** via GPT-SoVITS API
-- 🎧 **Speech recognition** using Faster-Whisper
-- 📁 Clean YAML-based config for personality configuration
+- 🧠 **Long-Term Memory (RAG)**: Uses a persistent vector database (`ChromaDB`) to remember past conversations and context forever.
+- 👂 **Cortana-style Listening**: Continuous Voice Activity Detection (VAD). Just say her name (**"Riko"**) to wake her up!
+- 👁️ **Screen Awareness**: Automatically monitors your clipboard to stay aware of what you are working on.
+- 🔊 **Expressive Voice Generation** via GPT-SoVITS API.
+- 🎧 **High-Accuracy Speech Recognition** using Faster-Whisper.
+- 📁 Clean YAML-based config for personality configuration.
 
 
 ## ⚙️ Configuration
 
-All prompts and parameters are stored in `config.yaml`.
+All prompts and parameters are stored in `character_config.yaml`.
 
 ```yaml
 OPENAI_API_KEY: sk-YOURAPIKEY
@@ -30,13 +33,10 @@ presets:
 sovits_ping_config:
   text_lang: en
   prompt_lang : en
-  ref_audio_path : D:\PyProjects\waifu_project\riko_project\character_files\main_sample.wav
-  prompt_text : This is a sample voice for you to just get started with because it sounds kind of cute but just make sure this doesn't have long silences.
+  ref_audio_path : ./character_files/main_sample.wav
+  prompt_text : This is a sample voice for you to just get started with because it sounds kind of cute.
   
-````
-
-You can define personalities by modiying the config file.
-
+```
 
 ## 🛠️ Setup
 
@@ -44,14 +44,15 @@ You can define personalities by modiying the config file.
 
 ```bash
 pip install uv 
-uv pip install -r extra-req.txt
 uv pip install -r requirements.txt
+pip install chromadb pyperclip sounddevice soundfile numpy
 ```
 
-**If you want to use GPU support for Faster whisper** Make sure you also have:
+**System Requirements:**
 
-* CUDA & cuDNN installed correctly (for Faster-Whisper GPU support)
 * `ffmpeg` installed (for audio processing)
+* `portaudio` (for sounddevice on Linux: `sudo apt install libportaudio2`)
+* CUDA & cuDNN (Optional, for Faster-Whisper GPU acceleration)
 
 
 ## 🧪 Usage
@@ -60,25 +61,25 @@ uv pip install -r requirements.txt
 
 ### 2. Run the main script:
 
-
 ```bash
-python main_chat.py
+python server/main_chat.py
 ```
 
-The flow:
+### The Autonomous Flow:
 
-1. Riko listens to your voice via microphone (push to talk)
-2. Transcribes it with Faster-Whisper
-3. Passes it to GPT (with history)
-4. Generates a response
-5. Synthesizes Riko's voice using GPT-SoVITS
-6. Plays the output back to you
+1. **Continuous Listen**: Riko waits in the background using VAD.
+2. **Wake Word**: Speak her name (**"Riko"**) to trigger her attention.
+3. **Transcription**: Transcribes your voice with Faster-Whisper.
+4. **Context Retrieval**: Automatically pulls relevant past memories from her vector database and reads your current clipboard.
+5. **Brain**: Passes all context to GPT for a highly personalized response.
+6. **Voice Synthesis**: Synthesizes her voice using GPT-SoVITS.
+7. **Playback**: Plays her response back to you.
 
 
 ## 📌 TODO / Future Improvements
 
 * [ ] GUI or web interface
-* [ ] Live microphone input support
+* [x] Live microphone input support (Continuous Listening)
 * [ ] Emotion or tone control in speech synthesis
 * [ ] VRM model frontend
 
@@ -87,11 +88,10 @@ The flow:
 
 * Voice synthesis powered by [GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)
 * ASR via [Faster-Whisper](https://github.com/SYSTRAN/faster-whisper)
+* Vector Database by [ChromaDB](https://github.com/chroma-core/chroma)
 * Language model via [OpenAI GPT](https://platform.openai.com)
 
 
 ## 📜 License
 
 MIT — feel free to clone, modify, and build your own waifu voice companion.
-
-
