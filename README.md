@@ -1,106 +1,106 @@
-# Project Riko
+# 🌸 Project Riko: The Autonomous AI Companion
 
-Project Riko is an elite anime-focused AI companion project by Just Rayen. She doesn't just listen; she remembers everything about you and stays aware of your world. It combines multi-brain LLM support (OpenAI, Gemini, Ollama), GPT-SoVITS voice synthesis, and Faster-Whisper ASR into a fully autonomous conversational pipeline.
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Multi-Brain](https://img.shields.io/badge/LLM-OpenAI%20%7C%20Gemini%20%7C%20Ollama-blueviolet)](https://github.com/NimuthuGanegoda/riko_project)
 
-**tested with python 3.10+ Windows >10 and Linux Ubuntu**
+Project Riko is an elite, autonomous anime-focused AI companion. She doesn't just respond; she listens, remembers, and observes your world. By combining advanced LLM support with expressive voice synthesis and real-time screen awareness, Riko bridges the gap between software and personality.
+
+---
 
 ## ✨ Elite Features
 
-- 💬 **Multi-Brain Dialogue**: Supports **OpenAI GPT**, **Google Gemini**, and **Ollama (100% Local)**. Choose the brain that fits your needs!
-- 🧠 **Long-Term Memory (RAG)**: Uses a persistent vector database (`ChromaDB`) to remember past conversations and context forever.
-- 👂 **Cortana-style Listening**: Continuous Voice Activity Detection (VAD). Just say her name (**"Riko"**) to wake her up!
-- 👁️ **Screen Awareness**: Automatically monitors your clipboard to stay aware of what you are working on.
-- 🔊 **Expressive Voice Generation** via GPT-SoVITS API.
-- 🎧 **High-Accuracy Speech Recognition** using Faster-Whisper.
-- 📁 Clean YAML-based config for personality configuration.
+| Feature | Description |
+| :--- | :--- |
+| 🧠 **Persistent Memory** | Uses **ChromaDB** (RAG) to remember every detail of your past conversations forever. |
+| 👂 **Cortana Mode** | **Continuous Listening** with VAD. Just say her name (**"Riko"**) to wake her up. |
+| 👁️ **Screen Awareness** | Automatically monitors your clipboard to provide context-aware assistance. |
+| 💬 **Multi-Brain** | Toggle between **OpenAI GPT**, **Google Gemini**, and **Ollama (Local)**. |
+| 🔊 **Expressive TTS** | Powered by **GPT-SoVITS** for high-quality, character-accurate voice synthesis. |
+| 🎧 **Pro STT** | Powered by **Faster-Whisper** for lightning-fast speech-to-text transcription. |
 
+---
 
-## ⚙️ Configuration
+## 🚀 The Autonomous Flow
 
-All prompts and parameters are stored in `character_config.yaml`.
+1.  **Continuous Listen**: Riko sits in the background, monitoring audio for activity.
+2.  **Wake Word Detection**: When you say her name, she triggers her recording loop.
+3.  **Context Injection**: She automatically retrieves past memories and reads your current clipboard.
+4.  **Inference**: Your chosen LLM (Remote or Local) generates a snarky or sweet response.
+5.  **Voice Synthesis**: Her response is synthesized into high-quality audio in real-time.
+6.  **Interaction Complete**: She goes back to sleep, waiting for you to call her again.
 
-```yaml
-# API Keys
-OPENAI_API_KEY: sk-YOURAPIKEY
-GEMINI_API_KEY: YOUR_GEMINI_API_KEY
+---
 
-# LLM Provider Configuration
-# Options: openai, gemini, ollama, auto
-llm_provider: "gemini" 
-model: "gemini-1.5-flash"  # or "gpt-4o", "llama3", etc.
+## 🛠️ Setup & Installation
 
-history_file: chat_history.json
-
-presets:
-  default:
-    system_prompt: |
-      You are a helpful assistant named Riko.
-      You speak like a snarky anime girl.
-      Always refer to the user as "senpai".
-
-sovits_ping_config:
-  text_lang: en
-  prompt_lang : en
-  ref_audio_path : ./character_files/main_sample.wav
-  prompt_text : This is a sample voice for you to just get started with because it sounds kind of cute.
-  
-```
-
-## 🛠️ Setup
-
-### Install Dependencies
-
+### 1. Install Core Dependencies
+We recommend using `uv` for lightning-fast package management:
 ```bash
 pip install uv 
 uv pip install -r requirements.txt
 pip install chromadb pyperclip sounddevice soundfile numpy google-generativeai ollama
 ```
 
-**System Requirements:**
+### 2. System Requirements
+*   **Audio**: `ffmpeg` (global) and `libportaudio2` (Linux: `sudo apt install libportaudio2`).
+*   **GPU (Optional)**: CUDA/cuDNN for Faster-Whisper and Local LLM acceleration.
+*   **TTS Server**: Ensure your [GPT-SoVITS API](https://github.com/RVC-Boss/GPT-SoVITS) is running.
 
-* `ffmpeg` installed (for audio processing)
-* `portaudio` (for sounddevice on Linux: `sudo apt install libportaudio2`)
-* CUDA & cuDNN (Optional, for Faster-Whisper GPU acceleration)
+---
 
+## ⚙️ Configuration
+
+Customize Riko's personality and brain in `character_config.yaml`.
+
+```yaml
+# --- LLM Settings ---
+llm_provider: "gemini"    # Options: openai, gemini, ollama, auto
+model: "gemini-1.5-flash" # The model name (e.g., "llama3" for Ollama)
+
+# --- API Keys ---
+OPENAI_API_KEY: "sk-..."
+GEMINI_API_KEY: "..."
+
+# --- Personality ---
+presets:
+  default:
+    system_prompt: |
+      You are Riko, a snarky yet affectionate anime girl. 
+      You are helpful but often tease your "senpai".
+```
+
+---
 
 ## 🧪 Usage
 
-### 1. Launch the GPT-SoVITS API 
+1.  **Start your GPT-SoVITS API Server.**
+2.  **Run the companion:**
+    ```bash
+    python server/main_chat.py
+    ```
+3.  **Say "Riko"** followed by your message. She will listen and respond!
 
-### 2. Run the main script:
+---
 
-```bash
-python server/main_chat.py
-```
+## 📌 Roadmap
+- [x] Continuous Listening (VAD)
+- [x] Long-Term Memory (RAG)
+- [x] Multi-LLM Provider Support
+- [ ] Live2D / VRM Visual Frontend
+- [ ] Real-time Emotion/Tone Control
+- [ ] Desktop Overlay Interface
 
-### The Autonomous Flow:
+---
 
-1. **Continuous Listen**: Riko waits in the background using VAD.
-2. **Wake Word**: Speak her name (**"Riko"**) to trigger her attention.
-3. **Transcription**: Transcribes your voice with Faster-Whisper.
-4. **Context Retrieval**: Automatically pulls relevant past memories from her vector database and reads your current clipboard.
-5. **Brain Selection**: Processes your command using OpenAI, Gemini, or a local Ollama model.
-6. **Voice Synthesis**: Synthesizes her voice using GPT-SoVITS.
-7. **Playback**: Plays her response back to you.
+## 🧑‍🎤 Credits & Acknowledgments
+*   **TTS**: [GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)
+*   **ASR**: [Faster-Whisper](https://github.com/SYSTRAN/faster-whisper)
+*   **Memory**: [ChromaDB](https://github.com/chroma-core/chroma)
+*   **Brains**: [OpenAI](https://openai.com), [Google Gemini](https://aistudio.google.com), [Ollama](https://ollama.com)
 
-
-## 📌 TODO / Future Improvements
-
-* [ ] GUI or web interface
-* [x] Live microphone input support (Continuous Listening)
-* [ ] Emotion or tone control in speech synthesis
-* [ ] VRM model frontend
-* [x] Multi-LLM support (Gemini & Ollama)
-
-
-## 🧑‍🎤 Credits
-
-* Voice synthesis powered by [GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)
-* ASR via [Faster-Whisper](https://github.com/SYSTRAN/faster-whisper)
-* Vector Database by [ChromaDB](https://github.com/chroma-core/chroma)
-* Brains powered by [OpenAI](https://platform.openai.com), [Google Gemini](https://aistudio.google.com), and [Ollama](https://ollama.com)
-
+---
 
 ## 📜 License
-
-MIT — feel free to clone, modify, and build your own waifu voice companion.
+MIT © Just Rayen.
+Feel free to clone, modify, and build your own waifu companion. Stay elite!
