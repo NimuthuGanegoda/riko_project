@@ -15,11 +15,16 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from core.riko_core import RikoCore
 from providers.tts.sovits_ping import sovits_gen
+from providers.vrm.vrm_controller import VRMController
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+# Global state for visuals and interruption
+vrm = VRMController()
+is_interrupted = False
 
 app.add_middleware(
     CORSMiddleware,
@@ -67,10 +72,25 @@ async def update_settings(settings: ModelSettings):
         logger.error(f"Failed to switch model: {e}")
         return JSONResponse(status_code=500, content={"detail": str(e)})
 
+@app.post("/interrupt")
+async def interrupt_endpoint():
+    global is_interrupted
+    is_interrupted = True
+    logger.info("❌ Interruption signal received.")
+    return {"status": "ok", "message": "Stopping generation/playback"}
+
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
+    global is_interrupted
+    is_interrupted = False 
     try:
         response_text, updated_history = riko.chat(request.text, history=request.history)
+        
+        if is_interrupted:
+            return JSONResponse(status_code=204, content={"message": "Interrupted"})
+
+        vrm_state = vrm.update_vrm_state(response_text)
+        
         uid = uuid.uuid4().hex
         audio_filename = f"web_output_{uid}.wav"
         audio_path = Path("audio") / audio_filename
@@ -87,7 +107,8 @@ async def chat_endpoint(request: ChatRequest):
         return {
             "text": response_text,
             "history": updated_history,
-            "audio_url": audio_url
+            "audio_url": audio_url,
+            "vrm_state": vrm_state
         }
     except Exception as e:
         logger.error(f"Chat failed: {e}")
@@ -95,6 +116,8 @@ async def chat_endpoint(request: ChatRequest):
 
 @app.post("/voice")
 async def voice_endpoint(file: UploadFile = File(...), history: str = Form(None)):
+    global is_interrupted
+    is_interrupted = False
     try:
         temp_audio = Path("audio") / f"temp_upload_{uuid.uuid4().hex}.wav"
         temp_audio.parent.mkdir(parents=True, exist_ok=True)
@@ -110,6 +133,11 @@ async def voice_endpoint(file: UploadFile = File(...), history: str = Form(None)
         import json
         history_list = json.loads(history) if history else None
         response_text, updated_history = riko.chat(user_text, history=history_list)
+
+        if is_interrupted:
+            return JSONResponse(status_code=204, content={"message": "Interrupted"})
+
+        vrm_state = vrm.update_vrm_state(response_text)
 
         uid = uuid.uuid4().hex
         audio_filename = f"web_output_{uid}.wav"
@@ -127,7 +155,8 @@ async def voice_endpoint(file: UploadFile = File(...), history: str = Form(None)
             "user_text": user_text,
             "text": response_text,
             "history": updated_history,
-            "audio_url": audio_url
+            "audio_url": audio_url,
+            "vrm_state": vrm_state
         }
     except Exception as e:
         logger.error(f"Voice chat failed: {e}")
