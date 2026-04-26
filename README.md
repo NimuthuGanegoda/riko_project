@@ -109,6 +109,9 @@ Riko is "Super Lite" and adapts to your system:
 *   **ASR**: [Faster-Whisper](https://github.com/SYSTRAN/faster-whisper)
 *   **Memory**: [ChromaDB](https://github.com/chroma-core/chroma)
 *   **Brains**: [OpenAI](https://openai.com), [Google Gemini](https://aistudio.google.com), [Ollama](https://ollama.com)
+*   **Visual Logic**: Inspired by and integrated from [AIRI (moeru-ai/airi)](https://github.com/moeru-ai/airi).
+*   **Interruption Flow**: Logic refined based on [Open-LLM-VTuber](https://github.com/Open-LLM-VTuber/Open-LLM-VTuber).
+*   **Learning Engine**: Autonomous fact management inspired by [Mem0](https://github.com/mem0ai/mem0).
 
 ---
 
