@@ -40,67 +40,88 @@ Project Riko is built with a clean, modular architecture for maximum performance
 
 ---
 
-## 🛠️ Setup & Installation
+## 🛠️ Complete Installation Guide
 
-### 1. Automatic Install (Recommended)
-This script installs all dependencies and triggers the Google Auth browser login automatically.
+### 📋 Prerequisites
 
-**Linux/Ubuntu:**
+Before you start, ensure you have the following installed:
+1.  **Python 3.10+**: Download from [python.org](https://www.python.org/).
+2.  **FFmpeg**: Required for audio/voice features.
+    - **Linux**: `sudo apt install ffmpeg`
+    - **Windows**: Download from [gyan.dev](https://www.gyan.dev/ffmpeg/builds/) and add `bin` to your PATH.
+3.  **Git**: Download from [git-scm.com](https://git-scm.com/).
+4.  **Google Cloud CLI** (Optional but Recommended): For browser-based Google Pro login.
+
+### 🚀 Automatic Installation (Fastest)
+
+Clone the repository and run the installer for your platform:
+
+**Linux / Ubuntu:**
 ```bash
+git clone https://github.com/NimuthuGanegoda/riko_project.git
+cd riko_project
 chmod +x install_reqs.sh
 ./install_reqs.sh
 ```
 
 **Windows:**
 ```cmd
+git clone https://github.com/NimuthuGanegoda/riko_project.git
+cd riko_project
 install_reqs.bat
 ```
 
-### 2. Manual Dependencies
-If you prefer manual control, use the optimized requirement files:
-```bash
-pip install uv 
-uv pip install -r requirements/requirements.txt
-uv pip install -r requirements/extra-req.txt
-```
+The installer will automatically:
+- Install the `uv` package manager for lightning-fast dependencies.
+- Install all core and extra requirements (Vision, 3D, etc.).
+- **Open your browser** to sign in with Google for your Pro subscription.
+- Download necessary NLP models (NLTK).
+
+### 📱 Mobile Installation (iOS/Android)
+
+Riko is a Progressive Web App (PWA). To take her with you:
+1.  Run the backend on your PC (see Usage below).
+2.  Open your mobile browser and navigate to your PC's IP address on port 3000 (e.g., `http://192.168.1.10:3000`).
+3.  Select **"Add to Home Screen"** (iOS: Share button -> Add to Home Screen | Android: Menu -> Install App).
+4.  Riko will now appear as an app on your home screen with full mic access!
 
 ---
 
 ## ⚙️ Configuration
 
-Customize Riko's personality in `configs/character_config.yaml`.
+Customize Riko's personality and brains in `configs/character_config.yaml`.
 
-- **Google Pro (ADC):** Just sign in via the browser during installation.
-- **ChatGPT:** Add your API key to the `OPENAI_API_KEY` field in the config.
-- **Local Models:** Riko automatically detects your hardware and loads the best quantized GGUF/OpenVINO models.
+- **Google Pro (ADC):** Just sign in via the browser during installation. Riko will automatically use your subscription!
+- **ChatGPT:** Add your API key to the `OPENAI_API_KEY` field.
+- **Local Models:** Riko automatically detects your hardware (NPU, Metal, CUDA) and loads the best models.
 
 ---
 
 ## 🧪 Usage
 
-### Terminal Mode (Voice + Text)
+### 💬 Terminal Mode
+For a quick voice/text chat in your console:
 ```bash
 python3 main.py --chat
 ```
 
-### Web & Mobile Mode (Recommended)
-1. Start the backend:
+### 🌐 Web & Mobile Mode (Full Experience)
+1. Start the backend API:
    ```bash
    ./run_web.sh  # Linux
    run_web.bat   # Windows
    ```
-2. Access the UI at `http://localhost:3000`.
-3. **Mobile Setup:** On your iPhone or Android, open the URL and select **"Add to Home Screen"** to install Riko as an app!
+2. The UI will be available at `http://localhost:3000`. You can now chat, see her expressions, and switch models on the fly!
 
 ---
 
 ## 🚀 Hardware Optimization
 
-Riko is "Super Lite" and adapts to your system:
-- **Intel Core Ultra:** Uses the **NPU** for zero-latency, low-power inference.
-- **Mac M1/M2/M3:** Uses **Metal (MPS)** for native Apple Silicon speed.
-- **AMD/NVIDIA:** Uses **ROCm/CUDA** for high-performance GPU acceleration.
-- **Potato PC:** Falls back to legacy CPU mode with highly quantized models.
+Riko is designed to be "Super Lite" and adapts to your system:
+- **Intel Core Ultra:** Automatically uses the **NPU** for ultra-low power inference.
+- **Apple Silicon (M1/M2/M3):** Uses **Metal (MPS)** for native Mac speed.
+- **AMD/NVIDIA GPUs:** Uses **ROCm/CUDA** for high-performance acceleration.
+- **Potato PC:** Falls back to legacy CPU mode with highly quantized models to ensure smooth operation on older hardware.
 
 ---
 
