@@ -4,17 +4,19 @@ import logging
 logger = logging.getLogger(__name__)
 
 class LlamaCppLLM(LLMProvider):
-    def __init__(self, model_path, n_ctx=2048):
+    def __init__(self, model_path, n_ctx=2048, backend='cpu_legacy'):
         try:
             from llama_cpp import Llama
-            # Prompt 3: "If missing (avx2), force the code to use the Llama.cpp backend with the -no-avx flag enabled during compilation."
-            # We can't recompile here easily, but we assume the user has the right binary or we use standard Llama class.
-            # "Enable mmap=True"
-            logger.info(f"Loading GGUF model from {model_path}")
+            
+            n_gpu_layers = 0
+            if backend in ['mps', 'rocm', 'cuda', 'llama_cpp']:
+                n_gpu_layers = -1 # Offload all layers to hardware accelerator
+                
+            logger.info(f"Loading GGUF model from {model_path} with n_gpu_layers={n_gpu_layers} ({backend})")
             self.llm = Llama(
                 model_path=model_path,
                 n_ctx=n_ctx,
-                n_gpu_layers=0, # Force CPU
+                n_gpu_layers=n_gpu_layers, 
                 verbose=True,
                 use_mmap=True
             )

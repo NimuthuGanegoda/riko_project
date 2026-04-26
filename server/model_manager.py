@@ -49,7 +49,7 @@ class ModelManager:
             if path.suffix == ".xml" and path.exists():
                 return str(path)
 
-        elif backend_type == "cpu_legacy" or backend_type == "cpu":
+        elif backend_type in ["cpu_legacy", "cpu", "llama_cpp"]:
             # Check for GGUF
             # Priority: Q4_K_M -> Q8_0 -> any .gguf
             candidates = [

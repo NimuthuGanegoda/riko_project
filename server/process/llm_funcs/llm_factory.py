@@ -20,9 +20,9 @@ class LLMFactory:
             from .llm_ollama import OllamaLLM
             return OllamaLLM(model_path)
 
-        elif backend == "cpu_legacy" or backend == "llama_cpp":
+        elif backend in ["cpu_legacy", "llama_cpp", "mps", "rocm", "cpu_modern"]:
             from .llm_local_gguf import LlamaCppLLM
-            return LlamaCppLLM(model_path)
+            return LlamaCppLLM(model_path, backend=backend)
 
         elif backend == "openvino":
             from .llm_local_openvino import OpenVINOLLM

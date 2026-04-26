@@ -1,3 +1,5 @@
 faster-whisper
 sounddevice
 openai
+llama-cpp-python
+py-cpuinfo

@@ -39,10 +39,12 @@ class RikoCore:
                 self.llm_provider = "openai"
             elif self.backend == 'openvino':
                 self.llm_provider = "openvino"
+            elif self.backend in ['mps', 'rocm', 'cpu_modern']:
+                self.llm_provider = "llama_cpp"
             else:
                 self.llm_provider = "cpu_legacy"
 
-        if self.llm_provider in ["openvino", "cpu_legacy"]:
+        if self.llm_provider in ["openvino", "cpu_legacy", "llama_cpp"]:
             self.real_llm_path = self.mm.find_model(self.llm_path, self.llm_provider)
         else:
             self.real_llm_path = self.config['model']

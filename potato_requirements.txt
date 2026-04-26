@@ -11,3 +11,5 @@ sounddevice
 pydub
 tqdm
 psutil
+py-cpuinfo
+llama-cpp-python

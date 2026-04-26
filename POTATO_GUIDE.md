@@ -11,11 +11,16 @@ This guide explains how to optimize the AI Waifu application for low-end hardwar
 
 ## Configuration for Potato Systems
 
-The system automatically detects hardware capabilities and selects the optimal backend:
+The system automatically detects hardware capabilities and selects the optimal backend, even on ultra-low-power devices:
 
-- If AVX2 instructions are available: Uses CPU-optimized models
-- If only basic CPU: Falls back to legacy CPU mode with lightweight models
-- No GPU acceleration: All processing runs on CPU to minimize complexity
+- **Intel NPU (Core Ultra):** Automatically prioritizes the Neural Processing Unit via OpenVINO. This drains almost zero battery compared to CPU/GPU.
+- **Apple Silicon (M1/M2/M3):** Native Metal (MPS) support. To ensure `llama-cpp-python` installs with Metal support, run:
+  ```bash
+  CMAKE_ARGS="-DGGML_METAL=on" pip install llama-cpp-python --force-reinstall --no-cache-dir
+  ```
+- **AMD GPUs (ROCm):** Automatically routes to hardware acceleration if PyTorch ROCm is detected.
+- **Legacy CPUs:** Falls back to legacy CPU mode with lightweight models.
+- **No GPU acceleration:** All processing runs on CPU to minimize complexity.
 
 ## Recommended Settings for Low-End Hardware
 

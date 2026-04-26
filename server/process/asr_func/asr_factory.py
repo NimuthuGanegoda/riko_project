@@ -8,9 +8,14 @@ class ASRFactory:
     def create_asr(backend, model_path="base.en", openvino_device="CPU") -> ASRProvider:
         logger.info(f"Creating ASR with backend: {backend}")
 
-        if backend == "cuda":
+        if backend in ["cuda", "rocm"]:
             from .asr_faster_whisper import FasterWhisperASR
             return FasterWhisperASR(model_path, device="cuda")
+
+        elif backend == "mps":
+            from .asr_faster_whisper import FasterWhisperASR
+            # Faster-Whisper doesn't natively support MPS yet, so we fallback to CPU (which is still very fast on M1/M2/M3)
+            return FasterWhisperASR(model_path, device="cpu")
 
         elif backend == "openvino":
             from .asr_openvino import OpenVINOASR
