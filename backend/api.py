@@ -1,6 +1,7 @@
 import os
 import uuid
 import logging
+import yaml
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,15 +9,18 @@ from pathlib import Path
 from pydantic import BaseModel
 from typing import List, Optional
 
-from riko_core import RikoCore
-from process.tts_func.sovits_ping import sovits_gen
+# Fix path to allow importing from backend
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from core.riko_core import RikoCore
+from providers.tts.sovits_ping import sovits_gen
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Enable CORS for the React frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -25,15 +29,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize RikoCore
-# We lazy-load it or initialize on startup
 riko = None
 
 @app.on_event("startup")
 async def startup_event():
     global riko
     try:
-        riko = RikoCore(config_path='character_config.yaml')
+        # Adjusted config path
+        CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', 'configs', 'character_config.yaml')
+        riko = RikoCore(config_path=CONFIG_PATH)
         logger.info("RikoCore initialized successfully for Web API.")
     except Exception as e:
         logger.error(f"Failed to initialize RikoCore: {e}")
@@ -51,7 +55,7 @@ async def get_settings():
     return {
         "provider": riko.llm_provider,
         "model": riko.real_llm_path,
-        "available_providers": ["gemini", "openai", "ollama", "openvino", "cpu_legacy"]
+        "available_providers": ["gemini", "openai", "ollama", "openvino", "cpu_legacy", "llama_cpp"]
     }
 
 @app.post("/settings")
@@ -67,8 +71,6 @@ async def update_settings(settings: ModelSettings):
 async def chat_endpoint(request: ChatRequest):
     try:
         response_text, updated_history = riko.chat(request.text, history=request.history)
-        
-        # Generate Audio
         uid = uuid.uuid4().hex
         audio_filename = f"web_output_{uid}.wav"
         audio_path = Path("audio") / audio_filename
@@ -94,26 +96,21 @@ async def chat_endpoint(request: ChatRequest):
 @app.post("/voice")
 async def voice_endpoint(file: UploadFile = File(...), history: str = Form(None)):
     try:
-        # Save temporary recording
         temp_audio = Path("audio") / f"temp_upload_{uuid.uuid4().hex}.wav"
         temp_audio.parent.mkdir(parents=True, exist_ok=True)
-        
         with open(temp_audio, "wb") as buffer:
             buffer.write(await file.read())
 
-        # Transcribe
         user_text = riko.asr.transcribe(str(temp_audio))
-        temp_audio.unlink() # Cleanup
+        temp_audio.unlink()
         
         if not user_text:
             return JSONResponse(status_code=400, content={"detail": "Could not hear anything."})
 
-        # Chat
         import json
         history_list = json.loads(history) if history else None
         response_text, updated_history = riko.chat(user_text, history=history_list)
 
-        # Generate Audio
         uid = uuid.uuid4().hex
         audio_filename = f"web_output_{uid}.wav"
         audio_path = Path("audio") / audio_filename

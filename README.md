@@ -9,6 +9,17 @@ Project Riko is an elite, autonomous anime-focused AI companion. She doesn't jus
 
 ---
 
+## 📂 Project Structure
+
+Project Riko is built with a clean, modular architecture:
+- `backend/`: Core logic, API server, and hardware-accelerated providers.
+- `client/`: Modern Web UI for interaction and settings.
+- `configs/`: Character personalities and system configurations.
+- `requirements/`: Optimized dependency lists for various hardware.
+- `scripts/`: Maintenance and potato-system optimization tools.
+
+---
+
 ## ✨ Elite Features
 
 | Feature | Description |
@@ -20,17 +31,6 @@ Project Riko is an elite, autonomous anime-focused AI companion. She doesn't jus
 | 👁️ **Screen Awareness** | Automatically monitors your clipboard to provide context-aware assistance. |
 | 🔊 **Expressive TTS** | Powered by **GPT-SoVITS** for high-quality, character-accurate voice synthesis. |
 | 🎧 **Pro STT** | Powered by **Faster-Whisper** for lightning-fast speech-to-text transcription. |
-
----
-
-## 🚀 The Autonomous Flow
-
-1.  **Continuous Listen**: Riko sits in the background, monitoring audio for activity.
-2.  **Wake Word Detection**: When you say her name, she triggers her recording loop.
-3.  **Context Injection**: She automatically retrieves past memories and reads your current clipboard.
-4.  **Inference**: Your chosen LLM (Gemini Pro, ChatGPT, or Local) generates a response.
-5.  **Voice Synthesis**: Her response is synthesized into high-quality audio in real-time.
-6.  **Interaction Complete**: She goes back to sleep, waiting for you to call her again.
 
 ---
 
@@ -47,20 +47,15 @@ chmod +x install_reqs.sh
 If you prefer manual control:
 ```bash
 pip install uv 
-uv pip install -r requirements.txt
-uv pip install google-auth google-auth-oauthlib
+uv pip install -r requirements/requirements.txt
+uv pip install -r requirements/extra-req.txt
 ```
-
-### 3. System Requirements
-*   **Audio**: `ffmpeg` (global) and `libportaudio2` (Linux: `sudo apt install libportaudio2`).
-*   **GPU (Optional)**: CUDA/cuDNN for Faster-Whisper and Local LLM acceleration.
-*   **TTS Server**: Ensure your [GPT-SoVITS API](https://github.com/RVC-Boss/GPT-SoVITS) is running.
 
 ---
 
 ## ⚙️ Configuration
 
-Customize Riko's personality and brains in `character_config.yaml`.
+Customize Riko's personality in `configs/character_config.yaml`.
 
 ```yaml
 # --- Default Brain ---
@@ -68,15 +63,7 @@ llm_provider: "gemini"
 model: "gemini-1.5-pro"  # Use that Pro power! 💎
 
 # --- API Keys ---
-OPENAI_API_KEY: "sk-..."
-GEMINI_API_KEY: "YOUR_GEMINI_API_KEY" # Not needed if signed in via Browser!
-
-# --- Personality ---
-presets:
-  default:
-    system_prompt: |
-      You are Riko, a snarky yet affectionate anime girl. 
-      You are helpful but often tease your "senpai".
+OPENAI_API_KEY: "sk-..." # Your ChatGPT Key
 ```
 
 ---
@@ -84,28 +71,15 @@ presets:
 ## 🧪 Usage
 
 1.  **Start your GPT-SoVITS API Server.**
-2.  **Run the companion:**
+2.  **Run the companion (Terminal Mode):**
     ```bash
-    python server/main_chat.py
+    python3 main.py --chat
     ```
-3.  **Run the Web Interface (Optional):**
+3.  **Run the companion (Web Mode):**
     ```bash
     ./run_web.sh
     ```
     Access the UI at `http://localhost:3000` to chat and switch models on the fly!
-4.  **Say "Riko"** followed by your message. She will listen and respond!
-
----
-
-## 📌 Roadmap
-- [x] Continuous Listening (VAD)
-- [x] Long-Term Memory (RAG)
-- [x] Multi-LLM Provider Support
-- [x] Keyless Google Pro (ADC) Support
-- [x] Dynamic Model Switching
-- [ ] Live2D / VRM Visual Frontend
-- [ ] Real-time Emotion/Tone Control
-- [ ] Desktop Overlay Interface
 
 ---
 
@@ -118,5 +92,4 @@ presets:
 ---
 
 ## 📜 License
-MIT © Just Rayen.
-Feel free to clone, modify, and build your own waifu companion. Stay elite!
+MIT © Just Rayen. Updated & Enhanced by Nimuthu.

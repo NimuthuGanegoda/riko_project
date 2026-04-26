@@ -3,16 +3,27 @@ import yaml
 import uuid
 import logging
 from pathlib import Path
-from hardware import HardwareDetector
-from model_manager import ModelManager
-from process.asr_func.asr_factory import ASRFactory
-from process.llm_funcs.llm_factory import LLMFactory
-from memory_manager import MemoryManager
+
+# Fix path to allow local imports
+import sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+if parent_dir not in sys.path:
+    sys.path.append(parent_dir)
+
+from core.hardware import HardwareDetector
+from managers.model_manager import ModelManager
+from providers.asr.asr_factory import ASRFactory
+from providers.llm.llm_factory import LLMFactory
+from managers.memory_manager import MemoryManager
 
 logger = logging.getLogger(__name__)
 
 class RikoCore:
-    def __init__(self, config_path='character_config.yaml'):
+    def __init__(self, config_path=None):
+        if config_path is None:
+            config_path = os.path.join(os.path.dirname(__file__), '..', '..', 'configs', 'character_config.yaml')
+            
         # Load Config
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)
@@ -60,8 +71,10 @@ class RikoCore:
             openvino_device=self.hw_config.get('openvino_device', 'CPU')
         )
 
-        # Memory & History
-        self.memory_db = MemoryManager(db_path="chroma_db")
+        # Memory & History - Fixed paths
+        db_path = os.path.join(os.path.dirname(__file__), '..', '..', 'chroma_db')
+        self.memory_db = MemoryManager(db_path=db_path)
+        
         self.system_prompt_content = self.config['presets']['default']['system_prompt']
         self.system_prompt = [{"role": "system", "content": self.system_prompt_content}]
 
@@ -80,7 +93,7 @@ class RikoCore:
         if self.llm_provider == "gemini":
             api_key = self.config.get('GEMINI_API_KEY')
         elif self.llm_provider == "ollama":
-            api_key = None # Ollama doesn't usually need a key
+            api_key = None 
 
         self.llm = LLMFactory.create_llm(
             self.llm_provider, 
@@ -94,14 +107,12 @@ class RikoCore:
         if history is None:
             history = list(self.system_prompt)
 
-        # Retrieve Context
         final_user_msg = user_text
         if use_memory:
             past_context = self.memory_db.get_context(user_text, n_results=3)
             if past_context:
                 final_user_msg = f"Relevant past memories:\n{past_context}\n\nUser's current message: {user_text}"
 
-        # Clipboard (only if requested, since it might not work in web context easily)
         if use_clipboard:
             try:
                 import pyperclip
@@ -112,11 +123,8 @@ class RikoCore:
                 pass
 
         history.append({"role": "user", "content": final_user_msg})
-
-        # Generate Response
         response = self.llm.generate(history)
         
-        # Save to Memory
         self.memory_db.add_memory(user_text, "user")
         self.memory_db.add_memory(response, "assistant")
         

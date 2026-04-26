@@ -1,4 +1,12 @@
 import logging
+import os
+import sys
+
+# Ensure local imports work
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.append(current_dir)
+
 from .llm_provider import LLMProvider
 
 logger = logging.getLogger(__name__)
@@ -10,7 +18,7 @@ class LLMFactory:
 
         if backend == "openai":
             from .llm_openai import OpenAILLM
-            return OpenAILLM(api_key, model_path) # System prompt usually handled in history or separate
+            return OpenAILLM(api_key, model_path)
 
         elif backend == "gemini":
             from .llm_gemini import GeminiLLM
@@ -27,9 +35,3 @@ class LLMFactory:
         elif backend == "openvino":
             from .llm_local_openvino import OpenVINOLLM
             return OpenVINOLLM(model_path, device=openvino_device)
-
-        else:
-            # Default fallback or error
-            logger.warning(f"Unknown backend {backend}, falling back to OpenAI check or error.")
-            # For now raise error
-            raise ValueError(f"Unknown backend: {backend}")

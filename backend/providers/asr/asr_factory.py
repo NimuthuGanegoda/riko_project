@@ -1,4 +1,12 @@
 import logging
+import os
+import sys
+
+# Ensure local imports work
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.append(current_dir)
+
 from .asr_provider import ASRProvider
 
 logger = logging.getLogger(__name__)
@@ -14,7 +22,7 @@ class ASRFactory:
 
         elif backend == "mps":
             from .asr_faster_whisper import FasterWhisperASR
-            # Faster-Whisper doesn't natively support MPS yet, so we fallback to CPU (which is still very fast on M1/M2/M3)
+            # Faster-Whisper doesn't natively support MPS yet, so we fallback to CPU
             return FasterWhisperASR(model_path, device="cpu")
 
         elif backend == "openvino":
