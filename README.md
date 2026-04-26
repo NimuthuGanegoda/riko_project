@@ -10,13 +10,20 @@ Project Riko is an elite, autonomous anime-focused AI companion. She doesn't jus
 ---
 
 ## 📂 Project Structure
-
-Project Riko is built with a clean, modular architecture:
-- `backend/`: Core logic, API server, and hardware-accelerated providers.
-- `client/`: Modern Web UI for interaction and settings.
-- `configs/`: Character personalities and system configurations.
-- `requirements/`: Optimized dependency lists for various hardware.
+...
 - `scripts/`: Maintenance and potato-system optimization tools.
+
+---
+
+## 📱 Multi-Platform Support
+
+Project Riko is designed to follow you everywhere:
+
+- **Windows:** Native `.bat` scripts for easy installation and execution.
+- **Linux (Ubuntu/Debian):** Full shell script support with hardware-accelerated backends.
+- **Mobile (iOS/Android):** Optimized **Progressive Web App (PWA)** interface. 
+  - Access Riko on your phone by navigating to the Web UI and selecting **"Add to Home Screen"**.
+  - Enjoy voice chat and AI assistance directly from your mobile device while the PC handles the heavy lifting!
 
 ---
 
