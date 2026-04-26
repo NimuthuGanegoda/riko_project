@@ -63,6 +63,31 @@ class RikoCore:
         self.system_prompt_content = self.config['presets']['default']['system_prompt']
         self.system_prompt = [{"role": "system", "content": self.system_prompt_content}]
 
+    def switch_model(self, provider, model_name=None):
+        """Switches the active LLM provider and model."""
+        logger.info(f"Switching LLM to Provider: {provider}, Model: {model_name}")
+        
+        self.llm_provider = provider
+        if model_name:
+            self.real_llm_path = model_name
+        else:
+            self.real_llm_path = self.config.get('model', 'gpt-3.5-turbo')
+
+        # Get the correct API key for the provider
+        api_key = self.config.get('OPENAI_API_KEY')
+        if self.llm_provider == "gemini":
+            api_key = self.config.get('GEMINI_API_KEY')
+        elif self.llm_provider == "ollama":
+            api_key = None # Ollama doesn't usually need a key
+
+        self.llm = LLMFactory.create_llm(
+            self.llm_provider, 
+            self.real_llm_path, 
+            api_key=api_key, 
+            openvino_device=self.hw_config.get('openvino_device', 'CPU')
+        )
+        return f"Successfully switched to {provider} ({self.real_llm_path})"
+
     def chat(self, user_text, history=None, use_memory=True, use_clipboard=False):
         if history is None:
             history = list(self.system_prompt)

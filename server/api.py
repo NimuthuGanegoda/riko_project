@@ -42,6 +42,27 @@ class ChatRequest(BaseModel):
     text: str
     history: Optional[List[dict]] = None
 
+class ModelSettings(BaseModel):
+    provider: str
+    model: Optional[str] = None
+
+@app.get("/settings")
+async def get_settings():
+    return {
+        "provider": riko.llm_provider,
+        "model": riko.real_llm_path,
+        "available_providers": ["gemini", "openai", "ollama", "openvino", "cpu_legacy"]
+    }
+
+@app.post("/settings")
+async def update_settings(settings: ModelSettings):
+    try:
+        msg = riko.switch_model(settings.provider, settings.model)
+        return {"message": msg, "provider": riko.llm_provider, "model": riko.real_llm_path}
+    except Exception as e:
+        logger.error(f"Failed to switch model: {e}")
+        return JSONResponse(status_code=500, content={"detail": str(e)})
+
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     try:

@@ -1,13 +1,25 @@
-OPENAI_API_KEY: sk-YOURAPIKEY
-GEMINI_API_KEY: YOUR_GEMINI_API_KEY
+OPENAI_API_KEY: "sk-..." # Enter your ChatGPT key here
+GEMINI_API_KEY: "YOUR_GEMINI_API_KEY" # Leave this if using Google Pro (ADC)
 history_file: chat_history.json
-model: "gpt-4.1-mini" # Model name (for OpenAI, Gemini, or Ollama)
 
-# LLM Provider Configuration
-# Options: openai, gemini, ollama, auto (auto uses hardware logic)
-llm_provider: "auto" 
+# --- Default Brain ---
+llm_provider: "gemini" 
+model: "gemini-1.5-pro" 
 
-# Legacy / Local Hardware Support
+# --- Model Presets ---
+model_options:
+  gemini:
+    - "gemini-1.5-pro"
+    - "gemini-1.5-flash"
+  openai:
+    - "gpt-4o"
+    - "gpt-4o-mini"
+    - "gpt-3.5-turbo"
+  ollama:
+    - "llama3"
+    - "mistral"
+
+# --- Personality ---
 local_llm_path: "models/riko-llm"
 local_asr_path: "base.en"
 backend_preference: "auto" # Options: auto, cuda, openvino, cpu_legacy

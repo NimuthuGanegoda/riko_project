@@ -1,12 +1,24 @@
 import logging
 import google.generativeai as genai
+import google.auth
 from .llm_provider import LLMProvider
 
 logger = logging.getLogger(__name__)
 
 class GeminiLLM(LLMProvider):
-    def __init__(self, api_key, model_name="gemini-1.5-flash"):
-        genai.configure(api_key=api_key)
+    def __init__(self, api_key=None, model_name="gemini-1.5-flash"):
+        if api_key and api_key != "YOUR_GEMINI_API_KEY":
+            logger.info("Using provided Gemini API Key.")
+            genai.configure(api_key=api_key)
+        else:
+            try:
+                logger.info("No API key provided. Attempting to use Google Application Default Credentials (ADC)...")
+                credentials, project_id = google.auth.default()
+                genai.configure(credentials=credentials)
+                logger.info(f"Successfully authenticated via ADC for project: {project_id}")
+            except Exception as e:
+                logger.warning(f"Failed to load ADC: {e}. If this is a first-time setup, please run 'gcloud auth application-default login'.")
+        
         self.model = genai.GenerativeModel(model_name)
         self.model_name = model_name
 
