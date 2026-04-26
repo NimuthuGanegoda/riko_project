@@ -29,6 +29,7 @@ Project Riko is built with a clean, modular architecture for maximum performance
 | 🧠 **Persistent Memory** | Uses **ChromaDB** (RAG) to remember every detail of your past conversations forever. |
 | 🎓 **Autonomous Learning** | **Mem0-style Fact Manager** that learns and remembers your personal details forever. |
 | 👂 **Cortana Mode** | **Continuous Listening** with VAD. Just say her name (**"Riko"**) to wake her up. |
+| 🤖 **Active Assistant** | She can execute actions for you! Ask her to open websites, check the time, or launch apps. |
 | 💎 **Keyless Google Pro** | **Google Pro Subscription** integration via browser login (ADC). No manual API keys needed! |
 | 🔄 **Dynamic Brain Swapping** | Switch between **Gemini**, **ChatGPT**, and **Ollama** on the fly through the Web UI. |
 | ⚡ **Hardware Accelerated** | Optimized for **Intel NPU**, **Apple Silicon (Metal)**, **NVIDIA (CUDA)**, and **AMD (ROCm)**. |
