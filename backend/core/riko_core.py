@@ -16,6 +16,7 @@ from managers.model_manager import ModelManager
 from providers.asr.asr_factory import ASRFactory
 from providers.llm.llm_factory import LLMFactory
 from managers.memory_manager import MemoryManager
+from managers.fact_manager import FactManager
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +76,10 @@ class RikoCore:
         db_path = os.path.join(os.path.dirname(__file__), '..', '..', 'chroma_db')
         self.memory_db = MemoryManager(db_path=db_path)
         
+        # Fact Manager (Mem0 Style)
+        facts_path = os.path.join(os.path.dirname(__file__), '..', '..', 'configs', 'user_facts.json')
+        self.fact_manager = FactManager(storage_path=facts_path)
+        
         self.system_prompt_content = self.config['presets']['default']['system_prompt']
         self.system_prompt = [{"role": "system", "content": self.system_prompt_content}]
 
@@ -107,6 +112,9 @@ class RikoCore:
         if history is None:
             history = list(self.system_prompt)
 
+        # Inject Core Facts
+        history.append({"role": "system", "content": self.fact_manager.get_fact_prompt()})
+
         final_user_msg = user_text
         if use_memory:
             past_context = self.memory_db.get_context(user_text, n_results=3)
@@ -127,6 +135,10 @@ class RikoCore:
         
         self.memory_db.add_memory(user_text, "user")
         self.memory_db.add_memory(response, "assistant")
+        
+        # Update Core Facts autonomously
+        import threading
+        threading.Thread(target=self.fact_manager.extract_and_update, args=(user_text, response, self.llm)).start()
         
         history.append({"role": "assistant", "content": response})
         return response, history

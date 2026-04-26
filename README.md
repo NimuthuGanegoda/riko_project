@@ -27,13 +27,15 @@ Project Riko is built with a clean, modular architecture for maximum performance
 | Feature | Description |
 | :--- | :--- |
 | 🧠 **Persistent Memory** | Uses **ChromaDB** (RAG) to remember every detail of your past conversations forever. |
+| 🎓 **Autonomous Learning** | **Mem0-style Fact Manager** that learns and remembers your personal details forever. |
 | 👂 **Cortana Mode** | **Continuous Listening** with VAD. Just say her name (**"Riko"**) to wake her up. |
 | 💎 **Keyless Google Pro** | **Google Pro Subscription** integration via browser login (ADC). No manual API keys needed! |
 | 🔄 **Dynamic Brain Swapping** | Switch between **Gemini**, **ChatGPT**, and **Ollama** on the fly through the Web UI. |
 | ⚡ **Hardware Accelerated** | Optimized for **Intel NPU**, **Apple Silicon (Metal)**, **NVIDIA (CUDA)**, and **AMD (ROCm)**. |
-| 👁️ **Screen Awareness** | Automatically monitors your clipboard to provide context-aware assistance. |
+| 👁️ **Full Screen Vision** | Powered by **PyAutoGUI**. Riko can capture and "see" your workspace to help you. |
 | 🔊 **Expressive TTS** | Powered by **GPT-SoVITS** for high-quality, character-accurate voice synthesis. |
 | 📱 **Mobile Ready** | Full **PWA Support**. Install Riko on your iPhone or Android home screen! |
+| 🎬 **3D VRM Support** | (Alpha) Support for interactive **3D Anime Models** with lip-sync. |
 
 ---
 

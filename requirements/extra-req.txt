@@ -3,3 +3,5 @@ sounddevice
 openai
 llama-cpp-python
 py-cpuinfo
+Pillow
+pyautogui
