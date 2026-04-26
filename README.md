@@ -4,26 +4,21 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Multi-Brain](https://img.shields.io/badge/LLM-Gemini_Pro%20%7C%20ChatGPT%20%7C%20Ollama-blueviolet)](https://github.com/NimuthuGanegoda/riko_project)
 [![Google Pro](https://img.shields.io/badge/Google-Gemini_Pro_💎-4285F4?logo=google-gemini&logoColor=white)](https://aistudio.google.com)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20iOS%20%7C%20Android-green)](https://github.com/NimuthuGanegoda/riko_project)
 
 Project Riko is an elite, autonomous anime-focused AI companion. She doesn't just respond; she listens, remembers, and observes your world. By combining advanced LLM support with expressive voice synthesis and real-time screen awareness, Riko bridges the gap between software and personality.
 
 ---
 
 ## 📂 Project Structure
-...
-- `scripts/`: Maintenance and potato-system optimization tools.
 
----
-
-## 📱 Multi-Platform Support
-
-Project Riko is designed to follow you everywhere:
-
-- **Windows:** Native `.bat` scripts for easy installation and execution.
-- **Linux (Ubuntu/Debian):** Full shell script support with hardware-accelerated backends.
-- **Mobile (iOS/Android):** Optimized **Progressive Web App (PWA)** interface. 
-  - Access Riko on your phone by navigating to the Web UI and selecting **"Add to Home Screen"**.
-  - Enjoy voice chat and AI assistance directly from your mobile device while the PC handles the heavy lifting!
+Project Riko is built with a clean, modular architecture for maximum performance and portability:
+- **`backend/`**: Core engine, hardware-accelerated providers (ASR, LLM, TTS), and API server.
+- **`client/`**: Modern React-based Web UI with PWA support for mobile devices.
+- **`configs/`**: Character personalities and system-wide configuration files.
+- **`docs/`**: Detailed guides for optimization and platform-specific tweaks.
+- **`requirements/`**: Optimized dependency lists for various hardware (CUDA, ROCm, NPU, Potato).
+- **`scripts/`**: Utility scripts for model conversion and potato-system optimization.
 
 ---
 
@@ -33,25 +28,33 @@ Project Riko is designed to follow you everywhere:
 | :--- | :--- |
 | 🧠 **Persistent Memory** | Uses **ChromaDB** (RAG) to remember every detail of your past conversations forever. |
 | 👂 **Cortana Mode** | **Continuous Listening** with VAD. Just say her name (**"Riko"**) to wake her up. |
-| 💎 **Keyless Google Pro** | **Google Pro Subscription** integration via browser login (ADC). No manual API keys! |
+| 💎 **Keyless Google Pro** | **Google Pro Subscription** integration via browser login (ADC). No manual API keys needed! |
 | 🔄 **Dynamic Brain Swapping** | Switch between **Gemini**, **ChatGPT**, and **Ollama** on the fly through the Web UI. |
+| ⚡ **Hardware Accelerated** | Optimized for **Intel NPU**, **Apple Silicon (Metal)**, **NVIDIA (CUDA)**, and **AMD (ROCm)**. |
 | 👁️ **Screen Awareness** | Automatically monitors your clipboard to provide context-aware assistance. |
 | 🔊 **Expressive TTS** | Powered by **GPT-SoVITS** for high-quality, character-accurate voice synthesis. |
-| 🎧 **Pro STT** | Powered by **Faster-Whisper** for lightning-fast speech-to-text transcription. |
+| 📱 **Mobile Ready** | Full **PWA Support**. Install Riko on your iPhone or Android home screen! |
 
 ---
 
 ## 🛠️ Setup & Installation
 
 ### 1. Automatic Install (Recommended)
-Simply run the installation script. It will install all dependencies and **trigger the Google Auth browser login** for you!
+This script installs all dependencies and triggers the Google Auth browser login automatically.
+
+**Linux/Ubuntu:**
 ```bash
 chmod +x install_reqs.sh
 ./install_reqs.sh
 ```
 
+**Windows:**
+```cmd
+install_reqs.bat
+```
+
 ### 2. Manual Dependencies
-If you prefer manual control:
+If you prefer manual control, use the optimized requirement files:
 ```bash
 pip install uv 
 uv pip install -r requirements/requirements.txt
@@ -64,29 +67,37 @@ uv pip install -r requirements/extra-req.txt
 
 Customize Riko's personality in `configs/character_config.yaml`.
 
-```yaml
-# --- Default Brain ---
-llm_provider: "gemini" 
-model: "gemini-1.5-pro"  # Use that Pro power! 💎
-
-# --- API Keys ---
-OPENAI_API_KEY: "sk-..." # Your ChatGPT Key
-```
+- **Google Pro (ADC):** Just sign in via the browser during installation.
+- **ChatGPT:** Add your API key to the `OPENAI_API_KEY` field in the config.
+- **Local Models:** Riko automatically detects your hardware and loads the best quantized GGUF/OpenVINO models.
 
 ---
 
 ## 🧪 Usage
 
-1.  **Start your GPT-SoVITS API Server.**
-2.  **Run the companion (Terminal Mode):**
-    ```bash
-    python3 main.py --chat
-    ```
-3.  **Run the companion (Web Mode):**
-    ```bash
-    ./run_web.sh
-    ```
-    Access the UI at `http://localhost:3000` to chat and switch models on the fly!
+### Terminal Mode (Voice + Text)
+```bash
+python3 main.py --chat
+```
+
+### Web & Mobile Mode (Recommended)
+1. Start the backend:
+   ```bash
+   ./run_web.sh  # Linux
+   run_web.bat   # Windows
+   ```
+2. Access the UI at `http://localhost:3000`.
+3. **Mobile Setup:** On your iPhone or Android, open the URL and select **"Add to Home Screen"** to install Riko as an app!
+
+---
+
+## 🚀 Hardware Optimization
+
+Riko is "Super Lite" and adapts to your system:
+- **Intel Core Ultra:** Uses the **NPU** for zero-latency, low-power inference.
+- **Mac M1/M2/M3:** Uses **Metal (MPS)** for native Apple Silicon speed.
+- **AMD/NVIDIA:** Uses **ROCm/CUDA** for high-performance GPU acceleration.
+- **Potato PC:** Falls back to legacy CPU mode with highly quantized models.
 
 ---
 
@@ -99,4 +110,4 @@ OPENAI_API_KEY: "sk-..." # Your ChatGPT Key
 ---
 
 ## 📜 License
-MIT © Just Rayen. Updated & Enhanced by Nimuthu.
+MIT © Just Rayen. Enhanced & Re-Engineered by Nimuthu.
