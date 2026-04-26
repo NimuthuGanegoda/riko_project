@@ -1,5 +1,5 @@
 @echo off
 echo 🚀 Starting Riko Web API Server...
-cd backend
-python api.py
+:: Using the new unified main.py
+python main.py --web
 pause
