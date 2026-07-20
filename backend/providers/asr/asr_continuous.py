@@ -59,3 +59,28 @@ def listen_continuously(output_file="recording.wav", samplerate=16000, threshold
     audio_data = np.concatenate(recording, axis=0)
     sf.write(output_file, audio_data, samplerate)
     return output_file
+
+
+def listen_for_wake_word(asr_provider, wake_word="riko", output_file="recording.wav",
+                          samplerate=16000, threshold=0.015, silence_duration=1.0):
+    """
+    Records short utterances (via listen_continuously) in a loop and transcribes
+    each with the given ASR provider, discarding any clip that doesn't contain
+    the wake word. Returns (True, leftover_text_or_None) once the wake word is
+    heard -- leftover_text is whatever was said after the wake word in the same
+    breath (e.g. "riko what time is it" -> "what time is it"), or None if only
+    the wake word itself was spoken.
+    """
+    while True:
+        clip = listen_continuously(output_file, samplerate, threshold, silence_duration)
+        if not clip:
+            continue
+
+        text = asr_provider.transcribe(clip)
+        if not text:
+            continue
+
+        lowered = text.lower()
+        if wake_word.lower() in lowered:
+            leftover = lowered.split(wake_word.lower(), 1)[1].strip(" ,.:!?")
+            return True, (leftover or None)

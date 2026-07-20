@@ -2,12 +2,19 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, Send, Volume2, Sparkles, Heart } from 'lucide-react';
+import VrmViewer, { VrmState } from './components/VrmViewer';
 
 const API_BASE = "http://localhost:8000";
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
+}
+
+interface Settings {
+  provider: string;
+  model: string | null;
+  available_providers: string[];
 }
 
 const RikoSVG = () => (
@@ -28,10 +35,17 @@ const App: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [status, setStatus] = useState("Ready to chat");
   const [isThinking, setIsThinking] = useState(false);
-  
+  const [vrmState, setVrmState] = useState<VrmState | null>(null);
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const [switchingProvider, setSwitchingProvider] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  if (audioRef.current === null) {
+    audioRef.current = new Audio();
+  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -40,6 +54,27 @@ const App: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    axios.get(`${API_BASE}/settings`)
+      .then(res => setSettings(res.data))
+      .catch(() => setStatus("Failed to load settings"));
+  }, []);
+
+  const handleProviderChange = async (provider: string) => {
+    setSwitchingProvider(true);
+    setStatus(`Switching to ${provider}...`);
+    try {
+      const res = await axios.post(`${API_BASE}/settings`, { provider });
+      setSettings(prev => prev ? { ...prev, provider: res.data.provider, model: res.data.model } : prev);
+      setStatus(res.data.message);
+    } catch (error) {
+      console.error(error);
+      setStatus("Failed to switch provider");
+    } finally {
+      setSwitchingProvider(false);
+    }
+  };
 
   const handleSendText = async () => {
     if (!inputText.trim() || isThinking) return;
@@ -58,7 +93,8 @@ const App: React.FC = () => {
       
       const rikoMsg: Message = { role: 'assistant', content: response.data.text };
       setMessages(prev => [...prev, rikoMsg]);
-      
+      if (response.data.vrm_state) setVrmState(response.data.vrm_state);
+
       if (response.data.audio_url) {
         playAudio(`${API_BASE}${response.data.audio_url}`);
       }
@@ -117,7 +153,8 @@ const App: React.FC = () => {
       
       const rikoMsg: Message = { role: 'assistant', content: response.data.text };
       setMessages(prev => [...prev, rikoMsg]);
-      
+      if (response.data.vrm_state) setVrmState(response.data.vrm_state);
+
       if (response.data.audio_url) {
         playAudio(`${API_BASE}${response.data.audio_url}`);
       }
@@ -131,7 +168,8 @@ const App: React.FC = () => {
   };
 
   const playAudio = (url: string) => {
-    const audio = new Audio(url);
+    const audio = audioRef.current!;
+    audio.src = url;
     setStatus("Speaking...");
     audio.onended = () => setStatus("Ready");
     audio.play();
@@ -141,12 +179,17 @@ const App: React.FC = () => {
     <div className="app-container">
       {/* Left: Riko View */}
       <div className="riko-view">
-        <motion.div 
+        <motion.div
           className="riko-avatar-container"
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
-          <RikoSVG />
+          <VrmViewer
+            modelUrl={import.meta.env.VITE_VRM_MODEL_URL ?? "/models/riko.vrm"}
+            vrmState={vrmState}
+            audioElement={audioRef.current}
+            fallback={<RikoSVG />}
+          />
         </motion.div>
         
         <div className="status-badge">
@@ -171,6 +214,16 @@ const App: React.FC = () => {
         <div className="chat-header">
           <h2>Riko AI 🌸</h2>
           <div className="flex gap-2">
+            <select
+              className="provider-select"
+              value={settings?.provider ?? ""}
+              disabled={!settings || switchingProvider || isThinking}
+              onChange={(e) => handleProviderChange(e.target.value)}
+            >
+              {(settings?.available_providers ?? []).map(p => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
             <Volume2 size={20} color="#ccc" />
           </div>
         </div>

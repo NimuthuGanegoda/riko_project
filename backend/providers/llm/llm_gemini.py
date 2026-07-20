@@ -1,6 +1,12 @@
+import base64
 import logging
+from io import BytesIO
+from typing import Optional
+
 import google.generativeai as genai
 import google.auth
+from PIL import Image
+
 from .llm_provider import LLMProvider
 
 logger = logging.getLogger(__name__)
@@ -22,7 +28,7 @@ class GeminiLLM(LLMProvider):
         self.model = genai.GenerativeModel(model_name)
         self.model_name = model_name
 
-    def generate(self, messages: list) -> str:
+    def generate(self, messages: list, image_b64: Optional[str] = None) -> str:
         try:
             # Convert messages to Gemini format
             # Gemini expects a list of parts, but for simplicity we can use their chat interface
@@ -68,8 +74,17 @@ class GeminiLLM(LLMProvider):
                 self.model = genai.GenerativeModel(self.model_name, system_instruction=system_instruction)
 
             chat = self.model.start_chat(history=gemini_history)
-            response = chat.send_message(last_clean_content)
-            
+
+            message_parts = last_clean_content
+            if image_b64:
+                try:
+                    image = Image.open(BytesIO(base64.b64decode(image_b64)))
+                    message_parts = [last_clean_content, image]
+                except Exception as e:
+                    logger.warning(f"Failed to decode image, falling back to text-only: {e}")
+
+            response = chat.send_message(message_parts)
+
             return response.text
         except Exception as e:
             logger.error(f"Gemini generation error: {e}")

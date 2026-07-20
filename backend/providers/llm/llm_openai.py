@@ -1,6 +1,7 @@
 from .llm_provider import LLMProvider
 from openai import OpenAI
 import logging
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -9,7 +10,7 @@ class OpenAILLM(LLMProvider):
         self.client = OpenAI(api_key=api_key)
         self.model_name = model_name
 
-    def generate(self, messages: list) -> str:
+    def generate(self, messages: list, image_b64: Optional[str] = None) -> str:
         try:
             # Filter messages to ensure they match OpenAI format if needed
             # (removing 'type' wrapping if it exists in the dicts from llm_scr.py)
@@ -30,6 +31,12 @@ class OpenAILLM(LLMProvider):
                     "role": m["role"],
                     "content": clean_content
                 })
+
+            if image_b64 and clean_messages and clean_messages[-1]["role"] == "user":
+                clean_messages[-1]["content"] = [
+                    {"type": "text", "text": clean_messages[-1]["content"]},
+                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"}}
+                ]
 
             response = self.client.chat.completions.create(
                 model=self.model_name,

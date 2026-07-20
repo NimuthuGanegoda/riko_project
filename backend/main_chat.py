@@ -10,7 +10,7 @@ from pathlib import Path
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from providers.asr.asr_continuous import listen_continuously
+from providers.asr.asr_continuous import listen_continuously, listen_for_wake_word
 from providers.tts.sovits_ping import sovits_gen, play_audio
 
 from core.hardware import HardwareDetector
@@ -81,6 +81,10 @@ except Exception as e:
     logger.error(f"Failed to initialize LLM: {e}")
     exit(1)
 
+# Wake-word ("Cortana mode") - opt-in
+WAKE_WORD_ENABLED = config.get('wake_word_enabled', False)
+WAKE_WORD = config.get('wake_word', 'riko')
+
 # History Management
 HISTORY_FILE = config['history_file']
 SYSTEM_PROMPT = [{"role": "system", "content": config['presets']['default']['system_prompt']}]
@@ -100,22 +104,24 @@ while True:
     conversation_recording = Path("audio") / "conversation.wav"
     conversation_recording.parent.mkdir(parents=True, exist_ok=True)
 
-    # Record (Assuming record_audio is available from one of the imports, or needed as a mock for now)
-    # The original file used record_audio but didn't import it directly? 
-    # Ah, it was probably in asr_continuous or similar.
-    
     try:
-        from providers.asr.asr_continuous import record_audio # Fixed missing import
-        record_audio(str(conversation_recording))
-    except Exception as e:
-        logger.error(f"Recording failed: {e}")
-        continue
-
-    try:
-        user_spoken_text = asr.transcribe(str(conversation_recording))
+        if WAKE_WORD_ENABLED:
+            _, leftover = listen_for_wake_word(
+                asr, wake_word=WAKE_WORD, output_file=str(conversation_recording)
+            )
+            if leftover:
+                user_spoken_text = leftover
+            else:
+                if not listen_continuously(str(conversation_recording)):
+                    continue
+                user_spoken_text = asr.transcribe(str(conversation_recording))
+        else:
+            if not listen_continuously(str(conversation_recording)):
+                continue
+            user_spoken_text = asr.transcribe(str(conversation_recording))
         print(f"User: {user_spoken_text}")
     except Exception as e:
-        logger.error(f"Transcription failed: {e}")
+        logger.error(f"Recording/transcription failed: {e}")
         continue
 
     if not user_spoken_text:

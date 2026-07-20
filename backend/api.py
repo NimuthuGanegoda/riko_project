@@ -70,6 +70,7 @@ async def startup_event():
 class ChatRequest(BaseModel):
     text: str
     history: Optional[List[dict]] = None
+    use_vision: Optional[bool] = False
 
 class ModelSettings(BaseModel):
     provider: str
@@ -104,7 +105,7 @@ async def chat_endpoint(request: ChatRequest):
     global is_interrupted
     is_interrupted = False 
     try:
-        response_text, updated_history = riko.chat(request.text, history=request.history)
+        response_text, updated_history = riko.chat(request.text, history=request.history, use_vision=request.use_vision)
         
         if is_interrupted:
             return JSONResponse(status_code=204, content={"message": "Interrupted"})
@@ -135,7 +136,7 @@ async def chat_endpoint(request: ChatRequest):
         return JSONResponse(status_code=500, content={"detail": str(e)})
 
 @app.post("/voice")
-async def voice_endpoint(file: UploadFile = File(...), history: str = Form(None)):
+async def voice_endpoint(file: UploadFile = File(...), history: str = Form(None), use_vision: bool = Form(False)):
     global is_interrupted
     is_interrupted = False
     try:
@@ -152,7 +153,7 @@ async def voice_endpoint(file: UploadFile = File(...), history: str = Form(None)
 
         import json
         history_list = json.loads(history) if history else None
-        response_text, updated_history = riko.chat(user_text, history=history_list)
+        response_text, updated_history = riko.chat(user_text, history=history_list, use_vision=use_vision)
 
         if is_interrupted:
             return JSONResponse(status_code=204, content={"message": "Interrupted"})

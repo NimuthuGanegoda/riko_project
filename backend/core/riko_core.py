@@ -13,6 +13,7 @@ if parent_dir not in sys.path:
     sys.path.append(parent_dir)
 
 from core.hardware import HardwareDetector
+from core.vision_manager import VisionManager
 from managers.model_manager import ModelManager
 from providers.asr.asr_factory import ASRFactory
 from providers.llm.llm_factory import LLMFactory
@@ -85,6 +86,9 @@ class RikoCore:
         # Action Manager (Virtual Assistant Features)
         self.action_manager = ActionManager()
 
+        # Vision Manager (Screen Awareness)
+        self.vision_manager = VisionManager()
+
         # Bounded pool for background fact-extraction so a burst of chat
         # requests can't spawn an unbounded number of threads.
         self._fact_executor = ThreadPoolExecutor(max_workers=2)
@@ -117,7 +121,7 @@ class RikoCore:
         )
         return f"Successfully switched to {provider} ({self.real_llm_path})"
 
-    def chat(self, user_text, history=None, use_memory=True, use_clipboard=False):
+    def chat(self, user_text, history=None, use_memory=True, use_clipboard=False, use_vision=False):
         if history is None:
             history = list(self.system_prompt)
 
@@ -143,8 +147,14 @@ class RikoCore:
             except:
                 pass
 
+        image_b64 = None
+        if use_vision and self.vision_manager.enabled:
+            image_b64 = self.vision_manager.capture_screen()
+            if image_b64:
+                history.append({"role": "system", "content": self.vision_manager.get_vision_prompt()})
+
         history.append({"role": "user", "content": final_user_msg})
-        raw_response = self.llm.generate(history)
+        raw_response = self.llm.generate(history, image_b64=image_b64)
         
         # Parse and execute any actions
         clean_response, action_result = self.action_manager.parse_and_execute(raw_response)

@@ -24,6 +24,10 @@ local_llm_path: "models/riko-llm"
 local_asr_path: "base.en"
 backend_preference: "auto" # Options: auto, cuda, openvino, cpu_legacy
 
+# --- Cortana Mode (terminal chat only) ---
+wake_word_enabled: false
+wake_word: "riko"
+
 presets:
   default:
     system_prompt: |
