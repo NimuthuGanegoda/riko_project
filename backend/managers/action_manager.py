@@ -8,6 +8,17 @@ import re
 
 logger = logging.getLogger(__name__)
 
+SAFE_APP_NAME_RE = re.compile(r'^[A-Za-z0-9 ._-]{1,64}$')
+
+# Only apps in this list can be launched. LLM output decides the *choice*
+# of app but never reaches the shell, so this bounds the blast radius of
+# prompt injection to "open one of these", not "run anything".
+ALLOWED_APPS = {
+    "notepad", "calculator", "calc", "explorer", "paint",
+    "chrome", "firefox", "edge", "terminal", "cmd",
+}
+
+
 class ActionManager:
     def __init__(self):
         self.available_actions = {
@@ -78,13 +89,22 @@ class ActionManager:
         return f"The current system time is {now}."
 
     def launch_app(self, app_name):
+        if not isinstance(app_name, str) or not SAFE_APP_NAME_RE.match(app_name):
+            logger.warning(f"Rejected launch_app: invalid app name {app_name!r}")
+            return f"Refused to launch '{app_name}': invalid app name."
+
+        if app_name.lower() not in ALLOWED_APPS:
+            logger.warning(f"Rejected launch_app: {app_name!r} not in allowlist")
+            return f"Refused to launch '{app_name}': not in the allowed app list."
+
         try:
-            if os.name == 'nt': # Windows
-                os.system(f'start {app_name}')
-            elif os.uname().sysname == 'Darwin': # macOS
-                subprocess.Popen(['open', '-a', app_name])
-            else: # Linux
-                subprocess.Popen([app_name])
+            if os.name == 'nt':  # Windows
+                # shell=False, argv list -> no shell metacharacter injection
+                subprocess.Popen(['cmd', '/c', 'start', '', app_name], shell=False)
+            elif os.uname().sysname == 'Darwin':  # macOS
+                subprocess.Popen(['open', '-a', app_name], shell=False)
+            else:  # Linux
+                subprocess.Popen([app_name], shell=False)
             return f"Successfully launched {app_name}."
         except Exception as e:
             return f"Failed to launch {app_name}: {e}"

@@ -3,6 +3,7 @@ import yaml
 import uuid
 import logging
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 
 # Fix path to allow local imports
 import sys
@@ -83,7 +84,11 @@ class RikoCore:
         
         # Action Manager (Virtual Assistant Features)
         self.action_manager = ActionManager()
-        
+
+        # Bounded pool for background fact-extraction so a burst of chat
+        # requests can't spawn an unbounded number of threads.
+        self._fact_executor = ThreadPoolExecutor(max_workers=2)
+
         self.system_prompt_content = self.config['presets']['default']['system_prompt']
         self.system_prompt = [{"role": "system", "content": self.system_prompt_content}]
 
@@ -147,9 +152,8 @@ class RikoCore:
         self.memory_db.add_memory(user_text, "user")
         self.memory_db.add_memory(clean_response, "assistant")
         
-        # Update Core Facts autonomously
-        import threading
-        threading.Thread(target=self.fact_manager.extract_and_update, args=(user_text, clean_response, self.llm)).start()
+        # Update Core Facts autonomously (bounded pool, not one thread per message)
+        self._fact_executor.submit(self.fact_manager.extract_and_update, user_text, clean_response, self.llm)
         
         history.append({"role": "assistant", "content": clean_response})
         if action_result:

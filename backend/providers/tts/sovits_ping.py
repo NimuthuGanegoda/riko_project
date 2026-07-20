@@ -1,12 +1,17 @@
+import os
 import requests
 ### MUST START SERVERS FIRST USING START ALL SERVER SCRIPT
 import time
-import soundfile as sf 
+import soundfile as sf
 import sounddevice as sd
 import yaml
 
-# Load YAML config
-with open('character_config.yaml', 'r') as f:
+# Resolve relative to this file, not the process cwd -- cwd varies depending
+# on how the app is launched (e.g. run_web.sh does `cd backend` first).
+_CONFIG_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'configs', 'character_config.yaml'
+)
+with open(_CONFIG_PATH, 'r') as f:
     char_config = yaml.safe_load(f)
 
 

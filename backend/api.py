@@ -26,13 +26,33 @@ app = FastAPI()
 vrm = VRMController()
 is_interrupted = False
 
+# Client (Vite dev server / built PWA) only ever talks to this API from
+# localhost; no cookies/credentials are used, so we don't need "*" + credentials.
+ALLOWED_ORIGINS = os.environ.get(
+    "RIKO_ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Optional shared-secret auth. Unset by default (keeps zero-config local use
+# working) but strongly recommended once this is reachable beyond localhost.
+API_KEY = os.environ.get("RIKO_API_KEY")
+
+
+@app.middleware("http")
+async def require_api_key(request, call_next):
+    if API_KEY and request.url.path not in ("/docs", "/openapi.json"):
+        if request.headers.get("x-api-key") != API_KEY:
+            return JSONResponse(status_code=401, content={"detail": "Unauthorized"})
+    return await call_next(request)
+
 
 riko = None
 
@@ -164,11 +184,18 @@ async def voice_endpoint(file: UploadFile = File(...), history: str = Form(None)
 
 @app.get("/audio/{filename}")
 async def get_audio(filename: str):
-    path = Path("audio") / filename
-    if path.exists():
-        return FileResponse(path)
-    return JSONResponse(status_code=404, content={"detail": "Audio not found"})
+    audio_dir = Path("audio").resolve()
+    # Strip any path components the client tries to smuggle in (../, absolute
+    # paths, etc.) so this can only ever resolve inside audio_dir.
+    safe_name = Path(filename).name
+    path = (audio_dir / safe_name).resolve()
+    if path.parent != audio_dir or not path.exists():
+        return JSONResponse(status_code=404, content={"detail": "Audio not found"})
+    return FileResponse(path)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Default to loopback only; set RIKO_HOST=0.0.0.0 explicitly to expose on
+    # the LAN (e.g. for a phone/overlay client), and set RIKO_API_KEY when you do.
+    host = os.environ.get("RIKO_HOST", "127.0.0.1")
+    uvicorn.run(app, host=host, port=8000)

@@ -6,7 +6,10 @@ import json
 import os
 from openai import OpenAI
 
-with open('character_config.yaml', 'r') as f:
+_CONFIG_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'configs', 'character_config.yaml'
+)
+with open(_CONFIG_PATH, 'r') as f:
     char_config = yaml.safe_load(f)
 
 client = OpenAI(api_key=char_config['OPENAI_API_KEY'])

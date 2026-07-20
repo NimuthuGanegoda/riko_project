@@ -1,4 +1,3 @@
-```
 # Python
 __pycache__/
 *.pyc
@@ -57,4 +56,8 @@ wheels/
 # OS
 .DS_Store
 Thumbs.db
-```
+
+# Node / client
+node_modules/
+client/dist/
+*.tsbuildinfo

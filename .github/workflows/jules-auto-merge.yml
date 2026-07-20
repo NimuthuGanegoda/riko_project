@@ -10,15 +10,20 @@ permissions:
 
 jobs:
   approve-and-merge:
+    # Only ever act on PRs opened by the Jules bot itself. Anyone else's PR
+    # is ignored by this workflow entirely (adjust login if it differs).
+    if: github.event.pull_request.user.login == 'google-labs-jules[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Auto-merge
+      - name: Enable auto-merge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
           gh pr ready "$PR_URL" || true
-          gh pr merge "$PR_URL" --squash --delete-branch
+          # --auto defers the actual merge until required status checks /
+          # branch protection rules on main pass, instead of merging instantly.
+          gh pr merge "$PR_URL" --squash --delete-branch --auto
