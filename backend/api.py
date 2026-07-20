@@ -139,6 +139,11 @@ async def chat_endpoint(request: ChatRequest):
 async def voice_endpoint(file: UploadFile = File(...), history: str = Form(None), use_vision: bool = Form(False)):
     global is_interrupted
     is_interrupted = False
+    if riko.asr is None:
+        return JSONResponse(
+            status_code=501,
+            content={"detail": "Server-side speech recognition is disabled on this deployment. Use browser speech recognition instead."}
+        )
     try:
         temp_audio = Path("audio") / f"temp_upload_{uuid.uuid4().hex}.wav"
         temp_audio.parent.mkdir(parents=True, exist_ok=True)
@@ -199,4 +204,7 @@ if __name__ == "__main__":
     # Default to loopback only; set RIKO_HOST=0.0.0.0 explicitly to expose on
     # the LAN (e.g. for a phone/overlay client), and set RIKO_API_KEY when you do.
     host = os.environ.get("RIKO_HOST", "127.0.0.1")
-    uvicorn.run(app, host=host, port=8000)
+    # Hosts like Render assign the port dynamically via $PORT rather than
+    # letting you fix it -- fall back to 8000 for local/Docker use.
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host=host, port=port)

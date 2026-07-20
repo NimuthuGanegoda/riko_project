@@ -40,9 +40,12 @@ class RikoCore:
         if self.backend == 'auto':
             self.backend = self.hw_config['backend']
 
-        # Initialize ASR
+        # Initialize ASR (optional -- disable for lightweight/free deployments
+        # that rely on browser-side speech recognition instead; local ASR
+        # models are the heaviest thing this backend loads at startup)
         self.asr_path = self.config.get('local_asr_path', 'base.en')
-        self.asr = ASRFactory.create_asr(self.backend, self.asr_path)
+        self.asr_enabled = self.config.get('asr_enabled', True)
+        self.asr = ASRFactory.create_asr(self.backend, self.asr_path) if self.asr_enabled else None
 
         # Initialize LLM
         self.mm = ModelManager()

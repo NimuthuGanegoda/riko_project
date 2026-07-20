@@ -113,6 +113,8 @@ python3 main.py --chat
    ```
 2. The UI will be available at `http://localhost:3000`. You can now chat, see her expressions, and switch models on the fly!
 
+Want Riko reachable from a real URL instead of just `localhost`? See [docs/DEPLOYMENT_FREE.md](docs/DEPLOYMENT_FREE.md) (free, Render) or [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) (your own VPS + domain).
+
 ---
 
 ## 🚀 Hardware Optimization
