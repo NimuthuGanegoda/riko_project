@@ -14,6 +14,8 @@ _CONFIG_PATH = os.path.join(
 with open(_CONFIG_PATH, 'r') as f:
     char_config = yaml.safe_load(f)
 
+SOVITS_URL = os.environ.get("SOVITS_URL", "http://127.0.0.1:9880/tts")
+
 
 def play_audio(path):
     data, samplerate = sf.read(path)
@@ -21,7 +23,7 @@ def play_audio(path):
     sd.wait()  # Wait until playback is finished
 
 def sovits_gen(in_text, output_wav_pth = "output.wav"):
-    url = "http://127.0.0.1:9880/tts"
+    url = SOVITS_URL
 
     payload = {
         "text": in_text,

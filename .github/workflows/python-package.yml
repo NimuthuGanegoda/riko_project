@@ -1,0 +1,39 @@
+name: Python Package
+
+on: [push]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # tests/ only exercises action_manager, fact_manager, and
+        # vision_manager (stdlib + Pillow) with everything else mocked -- it
+        # deliberately does NOT install the full requirements/*.txt stack
+        # (torch, GPT-SoVITS deps, etc), which is heavy, GPU/native-build
+        # sensitive, and would make this workflow slow and flaky for no
+        # benefit to what's actually being tested.
+        pip install flake8 pytest pillow
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names.
+        # scripts/potato is excluded here: it's already-known dead code (see
+        # docs/scaffolding notes) referencing a pre-refactor module layout
+        # that no longer exists -- flagged, not silently fixed, in this pass.
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=client,scripts/potato
+        # exit-zero treats all errors as warnings, still scans everything
+        # (including scripts/potato) so the issue stays visible.
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=client
+    - name: Test with pytest
+      run: |
+        pytest tests/

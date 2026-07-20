@@ -1,0 +1,34 @@
+# Single-user deployment: backend + Caddy reverse proxy.
+# See docs/DEPLOYMENT.md before running this -- in particular the
+# GPT-SoVITS reachability section (network_mode/host.docker.internal choice)
+# and building client/dist before `docker compose up`.
+
+services:
+  backend:
+    build: .
+    env_file: .env
+    environment:
+      - RIKO_HOST=0.0.0.0
+    volumes:
+      - ./configs:/app/configs:ro
+      - riko_audio:/app/backend/audio
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./client/dist:/srv/client-dist:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  riko_audio:
+  caddy_data:
+  caddy_config:

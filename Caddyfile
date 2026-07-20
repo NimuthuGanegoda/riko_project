@@ -1,0 +1,40 @@
+# Reverse proxy for a live, single-user Riko deployment.
+# See docs/DEPLOYMENT.md for setup, env vars, and the GPT-SoVITS networking
+# gotcha when the backend runs in Docker.
+#
+# Replace riko.example.com with your real domain before deploying -- Caddy
+# requests its Let's Encrypt cert automatically once DNS resolves to this host.
+
+riko.example.com {
+    encode gzip zstd
+
+    # API routes -> FastAPI backend. Deliberately does NOT proxy /docs or
+    # /openapi.json: those fall through to the SPA catch-all below, keeping
+    # Swagger UI unreachable from the public domain (it's exempted from the
+    # RIKO_API_KEY check in backend/api.py, so simply not proxying it is the
+    # cheapest way to avoid an unauthenticated docs endpoint).
+    handle /chat* {
+        reverse_proxy backend:8000
+    }
+    handle /voice* {
+        reverse_proxy backend:8000
+    }
+    handle /settings* {
+        reverse_proxy backend:8000
+    }
+    handle /interrupt* {
+        reverse_proxy backend:8000
+    }
+    handle /audio/* {
+        reverse_proxy backend:8000
+    }
+
+    # Everything else -> the built client (client/dist), with SPA fallback
+    # so client-side routing and the PWA service worker/manifest work at
+    # the domain root.
+    handle {
+        root * /srv/client-dist
+        try_files {path} /index.html
+        file_server
+    }
+}

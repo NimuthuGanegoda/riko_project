@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, Send, Volume2, Sparkles, Heart } from 'lucide-react';
 import VrmViewer, { VrmState } from './components/VrmViewer';
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE || "";
 
 interface Message {
   role: 'user' | 'assistant' | 'system';

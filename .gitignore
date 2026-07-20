@@ -45,6 +45,8 @@ wheels/
 .env
 .env.local
 *.env.*
+!.env.example
+!client/.env.development
 
 # Editor
 .vscode/
