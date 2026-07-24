@@ -1,8 +1,10 @@
 import os
 import queue
+
+import numpy as np
 import sounddevice as sd
 import soundfile as sf
-import numpy as np
+
 
 def listen_continuously(output_file="recording.wav", samplerate=16000, threshold=0.015, silence_duration=1.5):
     """

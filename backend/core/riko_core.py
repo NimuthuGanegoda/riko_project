@@ -1,12 +1,12 @@
-import os
-import yaml
-import uuid
 import logging
-from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor
+import os
 
 # Fix path to allow local imports
 import sys
+from concurrent.futures import ThreadPoolExecutor
+
+import yaml
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 if parent_dir not in sys.path:
@@ -14,12 +14,12 @@ if parent_dir not in sys.path:
 
 from core.hardware import HardwareDetector
 from core.vision_manager import VisionManager
+from managers.action_manager import ActionManager
+from managers.fact_manager import FactManager
+from managers.memory_manager import MemoryManager
 from managers.model_manager import ModelManager
 from providers.asr.asr_factory import ASRFactory
 from providers.llm.llm_factory import LLMFactory
-from managers.memory_manager import MemoryManager
-from managers.fact_manager import FactManager
-from managers.action_manager import ActionManager
 
 logger = logging.getLogger(__name__)
 

@@ -1,10 +1,9 @@
 import base64
 import logging
 from io import BytesIO
-from typing import Optional
 
-import google.generativeai as genai
 import google.auth
+import google.generativeai as genai
 from PIL import Image
 
 from .llm_provider import LLMProvider
@@ -28,7 +27,7 @@ class GeminiLLM(LLMProvider):
         self.model = genai.GenerativeModel(model_name)
         self.model_name = model_name
 
-    def generate(self, messages: list, image_b64: Optional[str] = None) -> str:
+    def generate(self, messages: list, image_b64: str | None = None) -> str:
         try:
             # Convert messages to Gemini format
             # Gemini expects a list of parts, but for simplicity we can use their chat interface

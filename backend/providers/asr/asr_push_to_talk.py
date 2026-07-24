@@ -1,6 +1,8 @@
 import os
+
 import sounddevice as sd
 import soundfile as sf
+
 
 def record_audio(output_file="recording.wav", samplerate=44100):
     """

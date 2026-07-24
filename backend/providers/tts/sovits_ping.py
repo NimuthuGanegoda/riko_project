@@ -1,9 +1,11 @@
 import os
-import requests
+
 ### MUST START SERVERS FIRST USING START ALL SERVER SCRIPT
 import time
-import soundfile as sf
+
+import requests
 import sounddevice as sd
+import soundfile as sf
 import yaml
 
 # Resolve relative to this file, not the process cwd -- cwd varies depending

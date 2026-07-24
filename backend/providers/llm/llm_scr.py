@@ -1,9 +1,9 @@
 # OpenAI tool calling with history 
 ### Uses a sample function
-import yaml
-import gradio as gr
 import json
 import os
+
+import yaml
 from openai import OpenAI
 
 _CONFIG_PATH = os.path.join(

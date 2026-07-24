@@ -1,5 +1,5 @@
-import os
 import chromadb
+
 
 class MemoryManager:
     def __init__(self, db_path="./chroma_db"):

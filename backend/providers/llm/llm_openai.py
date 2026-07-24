@@ -1,7 +1,8 @@
-from .llm_provider import LLMProvider
-from openai import OpenAI
 import logging
-from typing import Optional
+
+from openai import OpenAI
+
+from .llm_provider import LLMProvider
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +11,7 @@ class OpenAILLM(LLMProvider):
         self.client = OpenAI(api_key=api_key)
         self.model_name = model_name
 
-    def generate(self, messages: list, image_b64: Optional[str] = None) -> str:
+    def generate(self, messages: list, image_b64: str | None = None) -> str:
         try:
             # Filter messages to ensure they match OpenAI format if needed
             # (removing 'type' wrapping if it exists in the dicts from llm_scr.py)

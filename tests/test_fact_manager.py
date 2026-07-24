@@ -1,6 +1,10 @@
 import json
 
-from backend.managers.fact_manager import FactManager, ALLOWED_FACT_KEYS, MAX_FACT_VALUE_LEN
+from backend.managers.fact_manager import (
+    ALLOWED_FACT_KEYS,
+    MAX_FACT_VALUE_LEN,
+    FactManager,
+)
 
 
 class FakeLLM:

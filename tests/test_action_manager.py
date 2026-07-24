@@ -1,4 +1,8 @@
-from backend.managers.action_manager import ActionManager, ALLOWED_APPS, SAFE_APP_NAME_RE
+from backend.managers.action_manager import (
+    ALLOWED_APPS,
+    SAFE_APP_NAME_RE,
+    ActionManager,
+)
 
 
 def test_allowed_app_names_match_the_safe_pattern():

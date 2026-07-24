@@ -1,6 +1,7 @@
 import logging
+
 import ollama
-from typing import Optional
+
 from .llm_provider import LLMProvider
 
 logger = logging.getLogger(__name__)
@@ -9,7 +10,7 @@ class OllamaLLM(LLMProvider):
     def __init__(self, model_name="llama3"):
         self.model_name = model_name
 
-    def generate(self, messages: list, image_b64: Optional[str] = None) -> str:
+    def generate(self, messages: list, image_b64: str | None = None) -> str:
         try:
             # Ollama messages format matches OpenAI closely
             clean_messages = []

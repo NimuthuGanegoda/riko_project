@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import sys
-import argparse
 
 # Add the backend to the path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'backend'))

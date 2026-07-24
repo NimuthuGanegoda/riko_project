@@ -1,7 +1,7 @@
 import argparse
 import logging
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -9,9 +9,9 @@ logger = logging.getLogger(__name__)
 
 def convert_model(model_id, output_dir):
     try:
+        import openvino as ov
         from optimum.intel import OVModelForCausalLM
         from transformers import AutoTokenizer
-        import openvino as ov
     except ImportError:
         logger.error("Dependencies missing. Install requirements_legacy.txt")
         sys.exit(1)

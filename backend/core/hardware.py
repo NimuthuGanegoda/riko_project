@@ -1,7 +1,8 @@
-import torch
-import cpuinfo
 import logging
 import platform
+
+import cpuinfo
+import torch
 
 try:
     from openvino.runtime import Core

@@ -1,23 +1,24 @@
-import os
 import json
-import yaml
-import uuid
 import logging
-import pyperclip
-from pathlib import Path
+import os
 
 # Fix path to allow importing from backend
 import sys
+import uuid
+from pathlib import Path
+
+import pyperclip
+import yaml
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from providers.asr.asr_continuous import listen_continuously, listen_for_wake_word
-from providers.tts.sovits_ping import sovits_gen, play_audio
-
 from core.hardware import HardwareDetector
+from managers.memory_manager import MemoryManager
 from managers.model_manager import ModelManager
+from providers.asr.asr_continuous import listen_continuously, listen_for_wake_word
 from providers.asr.asr_factory import ASRFactory
 from providers.llm.llm_factory import LLMFactory
-from managers.memory_manager import MemoryManager
+from providers.tts.sovits_ping import play_audio, sovits_gen
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -3,15 +3,14 @@ AI Waifu for Potato Systems - Text Only Mode
 A lightweight version that works on low-end hardware without audio processing
 """
 
-import os
 import json
-import yaml
 import logging
-from pathlib import Path
+import os
+
+import yaml
 
 # Import only essential modules for text processing
 from process.llm_funcs.llm_factory import LLMFactory
-from server.memory_manager import MemoryManager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

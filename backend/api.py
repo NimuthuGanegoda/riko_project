@@ -1,16 +1,16 @@
-import os
-import uuid
 import logging
-import yaml
-from fastapi import FastAPI, UploadFile, File, Form
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-from pathlib import Path
-from pydantic import BaseModel
-from typing import List, Optional
+import os
 
 # Fix path to allow importing from backend
 import sys
+import uuid
+from pathlib import Path
+
+from fastapi import FastAPI, File, Form, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from pydantic import BaseModel
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from core.riko_core import RikoCore
@@ -69,12 +69,12 @@ async def startup_event():
 
 class ChatRequest(BaseModel):
     text: str
-    history: Optional[List[dict]] = None
-    use_vision: Optional[bool] = False
+    history: list[dict] | None = None
+    use_vision: bool | None = False
 
 class ModelSettings(BaseModel):
     provider: str
-    model: Optional[str] = None
+    model: str | None = None
 
 @app.get("/settings")
 async def get_settings():

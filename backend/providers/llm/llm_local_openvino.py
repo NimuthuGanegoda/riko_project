@@ -1,6 +1,6 @@
-from .llm_provider import LLMProvider
 import logging
-from typing import Optional
+
+from .llm_provider import LLMProvider
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class OpenVINOLLM(LLMProvider):
             logger.error(f"Failed to load OpenVINO model: {e}")
             raise
 
-    def generate(self, messages: list, image_b64: Optional[str] = None) -> str:
+    def generate(self, messages: list, image_b64: str | None = None) -> str:
         clean_messages = []
         for m in messages:
             content = m.get("content", "")

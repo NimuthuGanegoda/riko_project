@@ -1,6 +1,6 @@
-import os
 import json
 import logging
+import os
 import threading
 
 logger = logging.getLogger(__name__)

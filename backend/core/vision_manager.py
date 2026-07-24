@@ -1,7 +1,5 @@
-import os
 import base64
 import logging
-from PIL import Image
 from io import BytesIO
 
 try:
