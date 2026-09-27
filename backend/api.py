@@ -182,7 +182,7 @@ async def get_settings():
     return {
         "provider": riko.llm_provider,
         "model": riko.real_llm_path,
-        "available_providers": ["gemini", "openai", "ollama", "openvino", "cpu_legacy", "llama_cpp"]
+        "available_providers": ["gemini", "openai", "anthropic", "ollama", "openvino", "cpu_legacy", "llama_cpp"]
     }
 
 @app.post("/settings")

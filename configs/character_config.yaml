@@ -1,20 +1,25 @@
-OPENAI_API_KEY: "sk-..." # Enter your ChatGPT key here
-GEMINI_API_KEY: "YOUR_GEMINI_API_KEY" # Leave this if using Google Pro (ADC)
+# Prefer environment variables; never commit real credentials here.
+OPENAI_API_KEY: "YOUR_OPENAI_API_KEY"
+GEMINI_API_KEY: "YOUR_GEMINI_API_KEY" # Optional when Google ADC is configured.
+ANTHROPIC_API_KEY: "YOUR_ANTHROPIC_API_KEY"
 history_file: chat_history.json
 
 # --- Default Brain ---
 llm_provider: "gemini" 
-model: "gemini-1.5-pro" 
+model: "gemini-2.5-flash"
 
 # --- Model Presets ---
 model_options:
   gemini:
-    - "gemini-1.5-pro"
-    - "gemini-1.5-flash"
+    - "gemini-2.5-pro"
+    - "gemini-2.5-flash"
   openai:
-    - "gpt-4o"
+    - "gpt-4.1"
+    - "gpt-4.1-mini"
     - "gpt-4o-mini"
-    - "gpt-3.5-turbo"
+  anthropic:
+    - "claude-sonnet-4-5"
+    - "claude-haiku-4-5"
   ollama:
     - "llama3"
     - "mistral"

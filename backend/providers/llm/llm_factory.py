@@ -24,6 +24,10 @@ class LLMFactory:
             from .llm_gemini import GeminiLLM
             return GeminiLLM(api_key, model_path)
 
+        elif backend == "anthropic":
+            from .llm_anthropic import AnthropicLLM
+            return AnthropicLLM(api_key, model_path)
+
         elif backend == "ollama":
             from .llm_ollama import OllamaLLM
             return OllamaLLM(model_path)

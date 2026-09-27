@@ -121,6 +121,10 @@ Want Riko reachable from a real URL instead of just `localhost`? See [docs/DEPLO
 
 Riko can provide its model routing, personality, memory, facts, and actions to Project AIRI's advanced VRM/Live2D interface through the new OpenAI-compatible API. Follow the [AIRI + Riko integration guide](docs/AIRI_INTEGRATION.md) to run them together.
 
+### 🔐 Connect a model provider
+
+Google Gemini, OpenAI, Anthropic Claude, Ollama, and local models are supported. See [Connecting model providers](docs/MODEL_ACCOUNTS.md) for secure setup and the distinction between consumer subscriptions and API access.
+
 ## 🚀 Hardware Optimization
 
 Riko is designed to be "Super Lite" and adapts to your system:
