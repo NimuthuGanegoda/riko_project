@@ -106,7 +106,10 @@ class RikoCore:
         """Switches the active LLM provider and model."""
         logger.info(f"Switching LLM to Provider: {provider}, Model: {model_name}")
         
-        supported = {"gemini", "openai", "anthropic", "ollama", "openvino", "cpu_legacy", "llama_cpp"}
+        supported = {
+            "gemini", "openai", "anthropic", "google_account", "chatgpt_account",
+            "claude_account", "ollama", "openvino", "cpu_legacy", "llama_cpp",
+        }
         if provider not in supported:
             raise ValueError(f"Unsupported provider: {provider}")
 
@@ -115,6 +118,9 @@ class RikoCore:
             "gemini": "gemini-2.5-flash",
             "openai": "gpt-4.1-mini",
             "anthropic": "claude-sonnet-4-5",
+            "google_account": "gemini-2.5-flash",
+            "chatgpt_account": "gpt-5.2-codex",
+            "claude_account": "sonnet",
             "ollama": "llama3",
         }
         if model_name:

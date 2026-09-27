@@ -28,6 +28,18 @@ class LLMFactory:
             from .llm_anthropic import AnthropicLLM
             return AnthropicLLM(api_key, model_path)
 
+        elif backend == "claude_account":
+            from .llm_account_cli import ClaudeAccountLLM
+            return ClaudeAccountLLM(model_path)
+
+        elif backend == "chatgpt_account":
+            from .llm_account_cli import ChatGPTAccountLLM
+            return ChatGPTAccountLLM(model_path)
+
+        elif backend == "google_account":
+            from .llm_gemini import GeminiLLM
+            return GeminiLLM(None, model_path)
+
         elif backend == "ollama":
             from .llm_ollama import OllamaLLM
             return OllamaLLM(model_path)

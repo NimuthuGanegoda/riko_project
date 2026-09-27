@@ -26,17 +26,29 @@ Environment variables override values in `configs/character_config.yaml`. Restar
 
 Select `openai`, `anthropic`, or `gemini` from Riko's provider selector. If no model is supplied, Riko uses a suitable default for that provider.
 
-## Google account login (local installation)
+## Browser login without API keys (local installation)
 
-To use your Google account without a Gemini API key, install the Google Cloud CLI and run:
+Riko includes a launcher for the providers' official authentication tools. Each command opens your default web browser automatically:
 
 ```bash
-gcloud auth application-default login
+python scripts/connect_account.py google
+python scripts/connect_account.py chatgpt
+python scripts/connect_account.py claude
 ```
 
-Then leave `GEMINI_API_KEY` empty and start Riko from the same user account. ADC may require a Google Cloud project with the relevant API and billing/quota configured.
+Then select `google_account`, `chatgpt_account`, or `claude_account` in Riko. These modes intentionally use the official installed CLI and its protected credential cache; Riko never receives your password or copies browser cookies.
 
-For server deployments, use a narrowly scoped workload identity or service account. Do not upload your personal ADC file through the web UI.
+Prerequisites:
+
+- Google: install Google Cloud CLI. The launcher runs `gcloud auth application-default login`.
+- ChatGPT: install Codex CLI with `npm install -g @openai/codex`. The launcher runs `codex login` and uses subscription access available to that CLI.
+- Claude: install Claude Code. The launcher runs `claude auth login`; a supported paid Claude/Console account is required.
+
+The backend must run as the same operating-system user that completed login. Account-backed CLI calls can be slower than direct APIs and the provider controls available models and subscription limits.
+
+For remote/Docker deployments, a browser opened by the server would be on the wrong machine and interactive callbacks may be unreachable. Complete login on the host and deliberately mount the provider credential store, or use workload identity/API credentials. Never expose a generic web endpoint that can run login commands.
+
+Google ADC may require a Google Cloud project with the relevant API and billing/quota configured. For production servers, prefer a narrowly scoped workload identity or service account.
 
 ## Local and free option
 
