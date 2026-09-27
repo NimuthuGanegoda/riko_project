@@ -117,6 +117,10 @@ Want Riko reachable from a real URL instead of just `localhost`? See [docs/DEPLO
 
 ---
 
+### 🎭 Use Project AIRI as the character interface
+
+Riko can provide its model routing, personality, memory, facts, and actions to Project AIRI's advanced VRM/Live2D interface through the new OpenAI-compatible API. Follow the [AIRI + Riko integration guide](docs/AIRI_INTEGRATION.md) to run them together.
+
 ## 🚀 Hardware Optimization
 
 Riko is designed to be "Super Lite" and adapts to your system:
