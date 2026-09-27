@@ -19,6 +19,7 @@ from managers.fact_manager import FactManager
 from managers.memory_manager import MemoryManager
 from managers.model_manager import ModelManager
 from providers.asr.asr_factory import ASRFactory
+from providers.llm.credentials import provider_api_key
 from providers.llm.llm_factory import LLMFactory
 
 logger = logging.getLogger(__name__)
@@ -67,9 +68,7 @@ class RikoCore:
         else:
             self.real_llm_path = self.config['model']
 
-        self.api_key = self.config.get('OPENAI_API_KEY')
-        if self.llm_provider == "gemini":
-            self.api_key = self.config.get('GEMINI_API_KEY')
+        self.api_key = self._provider_api_key(self.llm_provider)
 
         self.llm = LLMFactory.create_llm(
             self.llm_provider, 
@@ -99,22 +98,39 @@ class RikoCore:
         self.system_prompt_content = self.config['presets']['default']['system_prompt']
         self.system_prompt = [{"role": "system", "content": self.system_prompt_content}]
 
+    def _provider_api_key(self, provider):
+        """Read credentials from the environment first, never from the browser."""
+        return provider_api_key(provider, self.config)
+
     def switch_model(self, provider, model_name=None):
         """Switches the active LLM provider and model."""
         logger.info(f"Switching LLM to Provider: {provider}, Model: {model_name}")
         
+        supported = {
+            "gemini", "openai", "anthropic", "google_account", "chatgpt_account",
+            "claude_account", "ollama", "openvino", "cpu_legacy", "llama_cpp",
+        }
+        if provider not in supported:
+            raise ValueError(f"Unsupported provider: {provider}")
+
         self.llm_provider = provider
+        defaults = {
+            "gemini": "gemini-2.5-flash",
+            "openai": "gpt-4.1-mini",
+            "anthropic": "claude-sonnet-4-5",
+            "google_account": "gemini-2.5-flash",
+            "chatgpt_account": "gpt-5.2-codex",
+            "claude_account": "sonnet",
+            "ollama": "llama3",
+        }
         if model_name:
             self.real_llm_path = model_name
+        elif provider in defaults:
+            self.real_llm_path = defaults[provider]
         else:
-            self.real_llm_path = self.config.get('model', 'gpt-3.5-turbo')
+            self.real_llm_path = self.config.get('local_llm_path', 'models/riko-llm')
 
-        # Get the correct API key for the provider
-        api_key = self.config.get('OPENAI_API_KEY')
-        if self.llm_provider == "gemini":
-            api_key = self.config.get('GEMINI_API_KEY')
-        elif self.llm_provider == "ollama":
-            api_key = None 
+        api_key = self._provider_api_key(self.llm_provider)
 
         self.llm = LLMFactory.create_llm(
             self.llm_provider, 

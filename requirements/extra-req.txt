@@ -1,6 +1,7 @@
 faster-whisper
 sounddevice
 openai
+anthropic>=0.40,<1
 llama-cpp-python
 py-cpuinfo
 Pillow
